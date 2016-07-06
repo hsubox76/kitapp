@@ -1,36 +1,29 @@
+
 import React, { PropTypes } from 'react';
 import { View, Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const phoneIcon = (<Icon name="phone" size={30} color="white" />);
+const editIcon = (<Icon name="edit" size={30} color="white" />);
 
-const EventBox = (props) => (
-  <LinearGradient colors={colorMap[props.event.type]} style={styles.container}>
-    <View style={styles.date}>
-      <View style={styles.month}>
-        <Text style={styles.monthText}>
-          {moment(props.event.time).format('MMM').toUpperCase()}
+const ContactBox = (props) => {
+  const colors = colorMap['meet'];
+  return (
+    <LinearGradient colors={colors} style={styles.container}>
+      <View style={styles.contactName}>
+        <Text style={styles.contactNameText} numberOfLines={1}>
+            {props.contact.name}
         </Text>
       </View>
-      <View style={styles.day}>
-        <Text style={styles.dayText}>{moment(props.event.time).format('D')}</Text>
+      <View style={styles.icon}>
+          {editIcon}
       </View>
-    </View>
-    <View style={styles.eventName}>
-      <Text style={styles.eventNameText} numberOfLines={2}>
-        {props.event.name}
-      </Text>
-    </View>
-    <View style={styles.icon}>
-      {phoneIcon}
-    </View>
-  </LinearGradient>
-);
+    </LinearGradient>
+  );
+};
 
-EventBox.propTypes = {
-  event: PropTypes.object,
+ContactBox.propTypes = {
+  contact: PropTypes.object,
 };
 
 const colorMap = {
@@ -67,12 +60,12 @@ const styles = {
   dayText: {
     color: 'white'
   },
-  eventName: {
+  contactName: {
     flex: 1,
     marginLeft: 10,
     justifyContent: 'center'
   },
-  eventNameText: {
+  contactNameText: {
     color: 'white'
   },
   icon: {
@@ -80,6 +73,6 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center'
   }
-}
+};
 
-export default EventBox;
+export default ContactBox;

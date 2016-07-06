@@ -1,18 +1,28 @@
-import React, {Component, PropTypes} from 'react';
-import { View, Text } from 'react-native';
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import LinearGradient from 'react-native-linear-gradient';
+import ContactList from '../components/ContactList';
 
-class Contacts extends Component {
-    render() {
-        return (
-            <View>
-                <Text>Contacts</Text>
-            </View>
-        );
-    }
+function mapStateToProps(state) {
+  return {
+    contacts: state.contacts
+  };
 }
 
-Contacts.propTypes = {
+const ContactsComponent = (props) => (
+  <LinearGradient colors={['#F7F7F7', '#D7D7D7']} style={styles.container}>
+    <ContactList contacts={props.contacts} />
+  </LinearGradient>
+);
 
+ContactsComponent.propTypes = {
+  contacts: PropTypes.array.isRequired
 };
 
-export default Contacts;
+const styles = {
+  container: {
+    flex: 1,
+  },
+};
+
+export default connect(mapStateToProps)(ContactsComponent);

@@ -1,33 +1,28 @@
-import React, {Component, PropTypes} from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import EventList from '../components/EventList';
 
 function mapStateToProps(state) {
-    return {
-        events: state.events
-    }
+  return {
+    events: state.events
+  };
 }
 
-class UpcomingComponent extends Component {
-    render() {
-        return (
-            <LinearGradient colors={['#F7F7F7', '#D7D7D7']} style={styles.container}>
-                <EventList events={this.props.events} />
-            </LinearGradient>
-        );
-    }
-}
+const UpcomingComponent = (props) => (
+  <LinearGradient colors={['#F7F7F7', '#D7D7D7']} style={styles.container}>
+    <EventList events={props.events} />
+  </LinearGradient>
+);
 
 UpcomingComponent.propTypes = {
-    events: PropTypes.array.isRequired
+  events: PropTypes.array.isRequired
 };
 
 const styles = {
-    container: {
-        flex: 1
-    }
-}
+  container: {
+    flex: 1
+  }
+};
 
 export default connect(mapStateToProps)(UpcomingComponent);

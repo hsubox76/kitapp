@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "postintall": "rnpm link"
+    "postinstall": "rnpm link"
   },
   "dependencies": {
     "moment": "^2.14.1",

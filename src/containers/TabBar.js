@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
 } from 'react-native';
@@ -37,7 +36,7 @@ class FacebookTabBar extends Component {
     });
   }
 
-  //color between activeColor and grey inactiveColor
+  // color between activeColor and grey inactiveColor
   iconColor(progress) {
     const red = activeColor.r + (inactiveValue - activeColor.r) * progress;
     const green = activeColor.g + (inactiveValue - activeColor.g) * progress;
@@ -48,25 +47,33 @@ class FacebookTabBar extends Component {
   render() {
     const activeColorString = `rgb(${activeColor.r},${activeColor.g},${activeColor.b})`;
     const inactiveColorString = `rgb(${inactiveValue},${inactiveValue},${inactiveValue})`;
-    return <View style={[styles.tabs, this.props.style, ]}>
-      {this.props.tabs.map((tab, i) => {
-        return <TouchableOpacity key={tab} onPress={() => { this.props.goToPage(i) }} style={styles.tab}>
-          <Icon
-            name={tab}
-            size={30}
-            color={this.props.activeTab === i ? activeColorString : inactiveColorString}
-            ref={(icon) => { this.tabIcons[i] = icon }}
-          />
-        </TouchableOpacity>;
-      })}
-    </View>;
+    return (
+      <View style={[styles.tabs, this.props.style]}>
+        {this.props.tabs.map((tab, i) => (
+          <TouchableOpacity
+            key={tab}
+            onPress={() => { this.props.goToPage(i); }}
+            style={styles.tab}
+          >
+            <Icon
+              name={tab}
+              size={30}
+              color={this.props.activeTab === i ? activeColorString : inactiveColorString}
+              ref={(icon) => { this.tabIcons[i] = icon; }}
+            />
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
   }
 }
 
 FacebookTabBar.propTypes = {
-  goToPage: React.PropTypes.func,
-  activeTab: React.PropTypes.number,
-  tabs: React.PropTypes.array,
+  goToPage: PropTypes.func,
+  activeTab: PropTypes.number,
+  tabs: PropTypes.array,
+  scrollValue: PropTypes.object,
+  style: PropTypes.object,
 };
 
 const styles = StyleSheet.create({

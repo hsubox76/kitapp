@@ -1,4 +1,5 @@
 {
+  "extends": "airbnb",
   "ecmaFeatures": {
     "jsx": true,
     "modules": true
@@ -8,7 +9,21 @@
     "node": true,
     "es6": true
   },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": ['.js', '.android.js', '.ios.js']
+      }
+    }
+  },
   "rules": {
-    "strict": 0
+    "strict": 0,
+    "indent": ["error", 2],
+    "react/jsx-indent": [2, 2],
+    "react/jsx-indent-props": [2, 2],
+    "comma-dangle": 0,
+    "no-use-before-define": 0,
+    "new-cap": 0,
+    "no-underscore-dangle": 0
   }
 }

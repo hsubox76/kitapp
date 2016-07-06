@@ -1,15 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 import { View, ListView, Dimensions } from 'react-native';
-import EventBox from './EventBox';
+import ContactBox from './ContactBox';
+import ContactListHeader from './ContactListHeader';
 
 const { width } = Dimensions.get('window');
 
-class EventList extends Component {
+class ContactList extends Component {
   constructor(props) {
     super(props);
     const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
     this.state = {
-      dataSource: ds.cloneWithRows(props.events)
+      dataSource: ds.cloneWithRows(props.contacts)
     };
   }
   render() {
@@ -17,15 +18,16 @@ class EventList extends Component {
       <ListView
         style={styles.listContainer}
         dataSource={this.state.dataSource}
-        renderRow={(event) => <EventBox key={event.id} event={event} />}
+        renderHeader={() => (<ContactListHeader />)}
+        renderRow={(contact) => <ContactBox key={contact.id} contact={contact} />}
         renderSeparator={(sectionID, rowID) => <View key={rowID} style={styles.separator} />}
       />
     );
   }
 }
 
-EventList.propTypes = {
-  events: PropTypes.array.isRequired
+ContactList.propTypes = {
+  contacts: PropTypes.array.isRequired
 };
 
 const styles = {
@@ -38,4 +40,4 @@ const styles = {
   }
 };
 
-export default EventList;
+export default ContactList;

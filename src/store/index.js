@@ -21,6 +21,26 @@ const initialStore = {
             time: 1468981860760,
             type: 'call'
         },
+    ],
+    contacts: [
+        {
+            id: 1001,
+            name: 'Mom',
+            cell: '555-555-1234',
+            email: 'mom@mom'
+        },
+        {
+            id: 1002,
+            name: 'Kevin',
+            cell: '555-555-1235',
+            email: 'x@y.com'
+        },
+        {
+            id: 1003,
+            name: 'Ruth',
+            cell: '555-555-1236',
+            email: 'w@z.com'
+        },
     ]
 };
 
