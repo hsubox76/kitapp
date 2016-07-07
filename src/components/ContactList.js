@@ -19,7 +19,12 @@ class ContactList extends Component {
         style={styles.listContainer}
         dataSource={this.state.dataSource}
         renderHeader={() => (<ContactListHeader />)}
-        renderRow={(contact) => <ContactBox key={contact.id} contact={contact} />}
+        renderRow={(contact) => (
+          <ContactBox
+            key={contact.id}
+            contact={contact}
+          />
+        )}
         renderSeparator={(sectionID, rowID) => <View key={rowID} style={styles.separator} />}
       />
     );
