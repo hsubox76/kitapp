@@ -23,12 +23,14 @@ function mapDispatchToActions(dispatch) {
 }
 
 const ContactBox = (props) => {
-  const colors = colorMap['meet'];
+  const colors = colorMap.meet;
   return (
-    <TouchableOpacity onPress={() => {
-      props.actions.setSelectedContact(props.contact.id);
-      props.actions.setModalVisibility(true);
-    }}>
+    <TouchableOpacity
+      onPress={() => {
+        props.actions.setSelectedContact(props.contact.id);
+        props.actions.setModalVisibility(true);
+      }}
+    >
       <LinearGradient colors={colors} style={styles.container}>
         <View style={styles.contactName}>
           <Text style={styles.contactNameText} numberOfLines={1}>
@@ -50,8 +52,8 @@ ContactBox.propTypes = {
 };
 
 const colorMap = {
-  'meet': ['#FF5E3A', '#FF2A68'],
-  'call': ['#74DF5F', '#09B014']
+  meet: ['#FF5E3A', '#FF2A68'],
+  call: ['#74DF5F', '#09B014']
 };
 
 const styles = {

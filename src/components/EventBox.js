@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const phoneIcon = (<Icon name="phone" size={30} color="white" />);
 
 const EventBox = (props) => (
-  <LinearGradient colors={colorMap[props.event.type]} style={styles.container}>
+  <LinearGradient colors={colorMap.call} style={styles.container}>
     <View style={styles.date}>
       <View style={styles.month}>
         <Text style={styles.monthText}>
@@ -34,8 +34,8 @@ EventBox.propTypes = {
 };
 
 const colorMap = {
-  'meet': ['#FF5E3A', '#FF2A68'],
-  'call': ['#74DF5F', '#09B014']
+  meet: ['#FF5E3A', '#FF2A68'],
+  call: ['#74DF5F', '#09B014']
 };
 
 const styles = {

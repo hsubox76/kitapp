@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import LinearGradient from 'react-native-linear-gradient';
 import ContactList from '../components/ContactList';
-import { CONTACT_TYPE } from '../data/contacts';
+import { CONTACT_TYPE } from '../data/constants';
 
 import * as Actions from '../actions';
 import ContactModal from '../components/ContactModal';

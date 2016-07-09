@@ -4,7 +4,7 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Foundation';
 
 const activeColor = {
   r: 0,
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   tabs: {
     height: 45,
     flexDirection: 'row',
-    paddingTop: 5,
+    paddingTop: 10,
     borderWidth: 1,
     borderTopWidth: 0,
     borderLeftWidth: 0,

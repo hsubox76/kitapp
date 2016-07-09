@@ -1,13 +1,10 @@
-export const CONTACT_TYPE = {
-  PRIMARY: 'PRIMARY',
-  SECONDARY: 'SECONDARY'
-};
+import {
+  CONTACT_TYPE,
+  FAM_TYPE,
+  CONTACT_NUMBER_TYPE,
+  METHOD_TYPE
+} from './constants';
 
-export const FAM_TYPE = {
-  PARTNER: 'PARTNER',
-  CHILD: 'CHILD',
-  OTHER: 'OTHER'
-};
 /**
  * Rules:
  * - Don't store family for secondary contacts
@@ -17,16 +14,77 @@ export const FAM_TYPE = {
  * **/
 export const contacts = [
   {
-    id: 1001,
+    id: 1,
     name: 'Mom',
     connection: CONTACT_TYPE.PRIMARY,
-    phone: ['555-555-1234'],
-    email: ['mom@mom'],
-    text: ['555-555-1234'],
-    birthdate: '09-09-1950',
+    birthdate: '09-09-1959',
+    rotations: [
+      {
+        every: [1, 'weeks'],
+        name: 'call Mom',
+        starting: '07-01-2016 00:00',
+        contactMethodId: 1
+      },
+      {
+        every: [2, 'days'],
+        name: 'text Mom',
+        starting: '07-01-2016 20:00',
+        contactMethodId: 2
+      }
+    ],
+    contactData: [
+      {
+        id: 1,
+        type: CONTACT_NUMBER_TYPE.PHONE_NUMBER,
+        data: '555-555-1234'
+      },
+      {
+        id: 2,
+        type: CONTACT_NUMBER_TYPE.PHONE_NUMBER,
+        data: '555-111-1234'
+      },
+      {
+        id: 3,
+        type: CONTACT_NUMBER_TYPE.EMAIL_ADDRESS,
+        data: 'mom@mom.mom'
+      },
+      {
+        id: 4,
+        type: CONTACT_NUMBER_TYPE.PHYSICAL_ADDRESS,
+        data: {
+          street: '123 Fake Street',
+          city: 'Faketown',
+          state: 'CA',
+          postal: '90210',
+          country: 'USA'
+        }
+      },
+    ],
+    contactMethods: [
+      {
+        id: 1,
+        type: METHOD_TYPE.CALL,
+        useContactDataId: 2
+      },
+      {
+        id: 2,
+        type: METHOD_TYPE.TEXT,
+        useContactDataId: 1
+      },
+      {
+        id: 3,
+        type: METHOD_TYPE.EMAIL,
+        useContactDataId: 3
+      },
+      {
+        id: 4,
+        type: METHOD_TYPE.POSTAL,
+        useContactDataId: 4
+      },
+    ],
   },
   {
-    id: 1002,
+    id: 2,
     name: 'Kevin',
     connection: CONTACT_TYPE.PRIMARY,
     phone: ['555-555-1234'],
@@ -39,7 +97,7 @@ export const contacts = [
     birthdate: '01-01-1979'
   },
   {
-    id: 1003,
+    id: 3,
     name: 'Nathalie',
     connection: CONTACT_TYPE.PRIMARY,
     cell: '555-555-1236',
@@ -51,9 +109,9 @@ export const contacts = [
     ]
   },
   {
-    id: 1004,
+    id: 4,
     name: 'Davis',
     connection: CONTACT_TYPE.SECONDARY,
     birthdate: '01-01-2011'
   }
-]
+];
