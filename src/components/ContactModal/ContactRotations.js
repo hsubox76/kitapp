@@ -3,18 +3,11 @@ import { View, Text } from 'react-native';
 import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { METHOD_TYPE, DATE_FORMAT } from '../data/constants';
-
-const typeIcons = {
-  [METHOD_TYPE.CALL]: 'phone',
-  [METHOD_TYPE.TEXT]: 'comments',
-  [METHOD_TYPE.EMAIL]: 'envelope',
-  [METHOD_TYPE.POSTAL]: 'home',
-};
+import { METHOD_TYPE_ICONS, DATE_FORMAT } from '../../data/constants';
 
 const ContactRotations = (props) => {
   const contact = props.contact;
-  const rotationViews = contact.rotations.map((rotation, index) => {
+  const rotationViews = props.rotations.map((rotation, index) => {
     const contactMethod = contact.contactMethods
       .find(currentContactMethod => currentContactMethod.id === rotation.contactMethodId);
     const everyMillis = moment.duration(...rotation.every).valueOf();
@@ -24,9 +17,13 @@ const ContactRotations = (props) => {
     const remainderMillis = millisSinceStart % everyMillis;
     const millisTillNext = everyMillis - remainderMillis;
     return (
-      <LinearGradient style={styles.rotationRow} colors={['#C644FC', '#5856D6']} key={index}>
+      <LinearGradient style={styles.rotationRow} colors={['#FF9500', '#FF5E3A']} key={index}>
         <View style={styles.contactTypeIcon}>
-          <Icon name={typeIcons[contactMethod.type]} size={20} style={styles.rotationRowText} />
+          <Icon
+            name={METHOD_TYPE_ICONS[contactMethod.type]}
+            size={20}
+            style={styles.rotationRowText}
+          />
         </View>
         <View>
           <Text style={[styles.rotationRowText, styles.rotationRowNameText]}>{rotation.name}</Text>
@@ -46,7 +43,8 @@ const ContactRotations = (props) => {
 };
 
 ContactRotations.propTypes = {
-  contact: PropTypes.object.isRequired
+  contact: PropTypes.object.isRequired,
+  rotations: PropTypes.array.isRequired
 };
 
 const styles = {

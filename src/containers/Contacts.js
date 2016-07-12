@@ -6,7 +6,7 @@ import ContactList from '../components/ContactList';
 import { CONTACT_TYPE } from '../data/constants';
 
 import * as Actions from '../actions';
-import ContactModal from '../components/ContactModal';
+import ContactModal from '../components/ContactModal/ContactModal';
 
 function filterPrimaryContactsOnly(contacts) {
   return contacts.filter((contact) => contact.connection === CONTACT_TYPE.PRIMARY);

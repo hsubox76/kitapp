@@ -18,20 +18,7 @@ export const contacts = [
     name: 'Mom',
     connection: CONTACT_TYPE.PRIMARY,
     birthdate: '09-09-1959',
-    rotations: [
-      {
-        every: [1, 'weeks'],
-        name: 'call Mom',
-        starting: '07-01-2016 00:00',
-        contactMethodId: 1
-      },
-      {
-        every: [2, 'days'],
-        name: 'text Mom',
-        starting: '07-01-2016 20:00',
-        contactMethodId: 2
-      }
-    ],
+    rotationIds: [1, 2],
     contactData: [
       {
         id: 1,
@@ -87,25 +74,50 @@ export const contacts = [
     id: 2,
     name: 'Kevin',
     connection: CONTACT_TYPE.PRIMARY,
-    phone: ['555-555-1234'],
-    email: ['kevin@kevin'],
-    text: ['555-555-1234'],
-    family: [
-      { id: 1003, type: FAM_TYPE.PARTNER, title: 'wife' },
-      { id: 1004, type: FAM_TYPE.CHILD, title: 'kid' }
+    birthdate: '07-07-1979',
+    rotationsIds: [3],
+    contactData: [
+      {
+        id: 1,
+        type: CONTACT_NUMBER_TYPE.EMAIL_ADDRESS,
+        data: 'kevin@kevin.kevin'
+      },
     ],
-    birthdate: '01-01-1979'
+    contactMethods: [
+      {
+        id: 1,
+        type: METHOD_TYPE.EMAIL,
+        useContactDataId: 1
+      },
+    ],
+    family: [
+      { id: 3, type: FAM_TYPE.PARTNER, title: 'husband' },
+      { id: 4, type: FAM_TYPE.CHILD, title: 'kid' }
+    ]
   },
   {
     id: 3,
     name: 'Nathalie',
     connection: CONTACT_TYPE.PRIMARY,
-    cell: '555-555-1236',
-    email: 'w@z.com',
-    birthdate: '01-01-1980',
+    birthdate: '12-07-1980',
+    rotationsIds: [4],
+    contactData: [
+      {
+        id: 1,
+        type: CONTACT_NUMBER_TYPE.PHONE_NUMBER,
+        data: 'n@nat.nat'
+      },
+    ],
+    contactMethods: [
+      {
+        id: 1,
+        type: METHOD_TYPE.CALL,
+        useContactDataId: 1
+      },
+    ],
     family: [
-      { id: 1002, type: FAM_TYPE.PARTNER, title: 'husband' },
-      { id: 1004, type: FAM_TYPE.CHILD, title: 'kid' }
+      { id: 2, type: FAM_TYPE.PARTNER, title: 'husband' },
+      { id: 4, type: FAM_TYPE.CHILD, title: 'kid' }
     ]
   },
   {

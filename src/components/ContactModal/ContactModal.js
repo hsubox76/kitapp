@@ -11,9 +11,12 @@ function getContactById(contacts, contactId) {
 }
 
 function mapStateToProps(state) {
+  const selectedContact = getContactById(state.contacts, state.ui.selectedContactId);
+  const rotations = state.rotations.filter((rotation) => rotation.contactId === selectedContact.id);
   return {
     events: state.events,
-    selectedContact: getContactById(state.contacts, state.ui.selectedContactId)
+    selectedContact,
+    rotations
   };
 }
 
@@ -58,7 +61,7 @@ class ContactModal extends Component {
               {daysUntilNextBirthday} days until next birthday
             </Text>
           </View>
-          <ContactRotations contact={contact} />
+          <ContactRotations contact={contact} rotations={this.props.rotations} />
           <ContactMethods contact={contact} />
         </View>
       );
@@ -80,7 +83,8 @@ ContactModal.propTypes = {
   onCloseModal: PropTypes.func,
   visible: PropTypes.bool,
   selectedContact: PropTypes.object,
-  events: PropTypes.array
+  events: PropTypes.array,
+  rotations: PropTypes.array
 };
 
 const styles = {

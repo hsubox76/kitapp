@@ -3,28 +3,28 @@ import { View, Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { METHOD_TYPE_ICONS } from '../data/constants';
 
-const phoneIcon = (<Icon name="phone" size={30} color="white" />);
 
 const EventBox = (props) => (
   <LinearGradient colors={colorMap.call} style={styles.container}>
     <View style={styles.date}>
       <View style={styles.month}>
         <Text style={styles.monthText}>
-          {moment(props.event.time).format('MMM').toUpperCase()}
+          {moment(props.event.timestamp).format('MMM').toUpperCase()}
         </Text>
       </View>
       <View style={styles.day}>
-        <Text style={styles.dayText}>{moment(props.event.time).format('D')}</Text>
+        <Text style={styles.dayText}>{moment(props.event.timestamp).format('D')}</Text>
       </View>
     </View>
     <View style={styles.eventName}>
       <Text style={styles.eventNameText} numberOfLines={2}>
-        {props.event.name}
+        {props.event.name} ({props.event.contactName})
       </Text>
     </View>
     <View style={styles.icon}>
-      {phoneIcon}
+      <Icon name={METHOD_TYPE_ICONS[props.event.contactMethod.type]} size={25} color="white" />
     </View>
   </LinearGradient>
 );

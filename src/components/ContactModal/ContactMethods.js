@@ -1,8 +1,7 @@
 import React, { PropTypes } from 'react';
 import { View, Text } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { METHOD_TYPE } from '../data/constants';
+import { METHOD_TYPE } from '../../data/constants';
 
 const typeIcons = {
   [METHOD_TYPE.CALL]: 'phone',
@@ -20,8 +19,7 @@ const ContactMethods = (props) => {
             contactDataItem.id === contactMethod.useContactDataId)
           .data;
         return (
-          <LinearGradient
-            colors={['#FF9500', '#FF5E3A']}
+          <View
             key={index}
             style={styles.contactRow}
           >
@@ -44,7 +42,7 @@ const ContactMethods = (props) => {
             <View style={styles.editIcon}>
               <Icon name="pencil" size={20} style={styles.contactRowText} />
             </View>
-          </LinearGradient>
+          </View>
         );
       });
   return (
@@ -65,7 +63,9 @@ const styles = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    margin: 2
+    margin: 2,
+    borderWidth: 2,
+    borderColor: '#FF5E3A'
   },
   contactTypeIcon: {
     width: 40,
@@ -80,7 +80,7 @@ const styles = {
     flex: 1
   },
   contactRowText: {
-    color: 'white'
+    color: '#FF5E3A'
   },
   contactRowDataText: {
     fontSize: 16
