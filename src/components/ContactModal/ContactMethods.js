@@ -6,13 +6,9 @@ const ContactMethods = (props) => {
   const contact = props.contact;
   const contactMethods = contact.contactMethods
       .map((contactMethod, index) => {
-        const contactData = contact.contactData
-          .find(contactDataItem =>
-            contactDataItem.id === contactMethod.useContactDataId)
-          .data;
         return (
           <View key={index} >
-            <ContactMethodBox contactMethod={contactMethod} contactData={contactData} />
+            <ContactMethodBox contactId={contact.id} contactMethod={contactMethod} />
           </View>
         );
       });

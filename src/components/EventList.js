@@ -22,6 +22,7 @@ class EventList extends Component {
       <ListView
         style={styles.listContainer}
         dataSource={this.state.dataSource}
+        enableEmptySections
         renderRow={(event) => <EventBox key={event.id} event={event} />}
         renderSeparator={(sectionID, rowID) => <View key={rowID} style={styles.separator} />}
       />

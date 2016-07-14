@@ -15,7 +15,8 @@ function filterPrimaryContactsOnly(contacts) {
 function mapStateToProps(state) {
   return {
     contacts: state.contacts,
-    modalVisible: state.ui.contactModalVisible
+    modalVisible: state.ui.contactModalVisible,
+    initialStoreLoaded: state.ui.initialStoreLoaded
   };
 }
 
@@ -35,15 +36,19 @@ const ContactsComponent = (props) => (
       />
       )
       : null}
-    <ContactList
-      contacts={filterPrimaryContactsOnly(props.contacts)}
-    />
+    {true &&
+      <ContactList
+        contacts={filterPrimaryContactsOnly(props.contacts)}
+      />
+    }
   </LinearGradient>
 );
 
 ContactsComponent.propTypes = {
   contacts: PropTypes.array.isRequired,
-  actions: PropTypes.objectOf(PropTypes.func)
+  actions: PropTypes.objectOf(PropTypes.func),
+  initialStoreLoaded: PropTypes.bool,
+  modalVisible: PropTypes.bool,
 };
 
 const styles = {

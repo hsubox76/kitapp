@@ -1,14 +1,19 @@
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { reducer } from '../reducers';
-import { contacts } from '../data/contacts';
-import { rotations } from '../data/rotations';
+// import { contacts } from '../data/contacts';
+// import { rotations } from '../data/rotations';
+
+const contacts = [];
+const rotations = [];
 
 const initialState = {
-  contacts: [],
-  rotations: [],
+  contacts,
+  rotations,
+  events: [],
   ui: {
-    contactModalVisible: false
+    contactModalVisible: false,
+    hasUnsavedChanges: false
   }
 };
 

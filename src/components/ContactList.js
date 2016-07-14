@@ -13,11 +13,17 @@ class ContactList extends Component {
       dataSource: ds.cloneWithRows(props.contacts)
     };
   }
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(nextProps.contacts)
+    });
+  }
   render() {
     return (
       <ListView
         style={styles.listContainer}
         dataSource={this.state.dataSource}
+        enableEmptySections
         renderHeader={() => (<ContactListHeader />)}
         renderRow={(contact) => (
           <ContactBox
