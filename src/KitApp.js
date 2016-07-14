@@ -11,7 +11,7 @@ import TabBar from './containers/TabBar';
 
 const KitApp = () => (
   <Provider store={store}>
-    <TabView initialPage={1} renderTabBar={() => <TabBar />}>
+    <TabView initialPage={0} renderTabBar={() => <TabBar />}>
       <Upcoming tabLabel="clock" />
       <Contacts tabLabel="torsos" />
       <View tabLabel="widget" />

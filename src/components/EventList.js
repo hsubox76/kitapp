@@ -12,6 +12,11 @@ class EventList extends Component {
       dataSource: ds.cloneWithRows(props.events)
     };
   }
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(nextProps.events)
+    });
+  }
   render() {
     return (
       <ListView
