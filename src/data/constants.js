@@ -16,6 +16,13 @@ export const METHOD_TYPE = {
   POSTAL: 'POSTAL'
 };
 
+export const METHOD_TYPE_LABELS = [
+  { type: METHOD_TYPE.CALL, label: 'call' },
+  { type: METHOD_TYPE.TEXT, label: 'text' },
+  { type: METHOD_TYPE.EMAIL, label: 'email' },
+  { type: METHOD_TYPE.POSTAL, label: 'mail' },
+];
+
 export const METHOD_TYPE_ICONS = {
   [METHOD_TYPE.CALL]: 'phone',
   [METHOD_TYPE.TEXT]: 'comments',

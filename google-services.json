@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "605729400303",
+    "firebase_url": "https://kitapp-8d90a.firebaseio.com",
+    "project_id": "kitapp-8d90a",
+    "storage_bucket": "kitapp-8d90a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:605729400303:android:2c72c31c02ffeb13",
+        "android_client_info": {
+          "package_name": "com.kitapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "605729400303-asnqne8ku2lnptbcf72uf9clf3brbim5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7JWUgDpzGdQCD4x7Q5CB-4Go7CYMyA4c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

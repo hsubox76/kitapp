@@ -2,6 +2,8 @@ import { ACTIONS } from './types';
 import * as Storage from '../data/storage';
 import moment from 'moment';
 import { DATE_FORMAT } from '../data/constants';
+import { contacts as testContacts } from '../data/contacts';
+import { rotations as testRotations } from '../data/rotations';
 
 // Helper functions
 
@@ -44,9 +46,23 @@ export function fetchStoreFromStorage() {
   };
 }
 
-export function writeStoreToStorage() {
+export function resetToTestData() {
   return (dispatch, getStore) => {
-    const store = getStore();
+    const newStore = Object.assign({}, getStore(), {
+      contacts: testContacts,
+      rotations: testRotations
+    });
+    dispatch({
+      type: ACTIONS.SET_STORE,
+      payload: newStore
+    });
+    dispatch(writeStoreToStorage(newStore));
+  };
+}
+
+export function writeStoreToStorage(customStore) {
+  return (dispatch, getStore) => {
+    const store = customStore || getStore();
     Storage.writeStoreToStorage(store)
     .then(() => {
       // probably set some state to indicate write succeeded

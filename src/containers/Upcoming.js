@@ -33,8 +33,8 @@ class UpcomingComponent extends Component {
   render() {
     return (
       <LinearGradient colors={['#F7F7F7', '#D7D7D7']} style={styles.container}>
-        <Button onPress={this.props.actions.writeStoreToStorage}>
-          write to local storage
+        <Button onPress={this.props.actions.resetToTestData}>
+          reset to test data
         </Button>
         {this.props.initialStoreLoaded &&
           <EventList events={this.props.events} />
