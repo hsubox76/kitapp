@@ -41,3 +41,6 @@ android/app/libs
 android/keystores/debug.keystore
 
 .vscode/*
+
+src/private
+google-services.json

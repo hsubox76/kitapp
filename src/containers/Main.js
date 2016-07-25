@@ -33,7 +33,7 @@ class Main extends Component {
   }
   render() {
     return (
-      <TabView initialPage={1} renderTabBar={() => <TabBar />}>
+      <TabView initialPage={0} renderTabBar={() => <TabBar />}>
         <Upcoming tabLabel="clock" />
         <Contacts tabLabel="torsos" />
         <View tabLabel="widget" />

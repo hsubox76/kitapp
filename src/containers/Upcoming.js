@@ -5,6 +5,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import EventList from '../components/EventList';
 import Button from 'apsl-react-native-button';
 import * as Actions from '../actions';
+import firebaseApp from '../api/firebase';
 
 function mapStateToProps(state) {
   return {
@@ -30,11 +31,23 @@ class UpcomingComponent extends Component {
       this.props.actions.updateEvents();
     }
   }
+  writeToFirebase() {
+    firebaseApp.database().ref('users/testuser').set({
+      username: 'test_user',
+      email: 'test@user.com'
+    })
+    .then(() => {
+      console.warn('wrote to firebase');
+    });
+  }
   render() {
     return (
       <LinearGradient colors={['#F7F7F7', '#D7D7D7']} style={styles.container}>
         <Button onPress={this.props.actions.resetToTestData}>
           reset to test data
+        </Button>
+        <Button onPress={this.writeToFirebase}>
+          write to firebase
         </Button>
         {this.props.initialStoreLoaded &&
           <EventList events={this.props.events} />

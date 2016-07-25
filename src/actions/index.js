@@ -1,5 +1,6 @@
 import { ACTIONS } from './types';
 import * as Storage from '../data/storage';
+import firebaseApp from '../api/firebase';
 import moment from 'moment';
 import { DATE_FORMAT } from '../data/constants';
 import { contacts as testContacts } from '../data/contacts';
@@ -38,11 +39,22 @@ export function updateContactMethod(contactId, contactMethod) {
 
 export function fetchStoreFromStorage() {
   return (dispatch) => {
-    Storage.getStoreFromStorage()
-    .then(result => {
-      dispatch({ type: ACTIONS.SET_STORE, payload: result });
-    })
-    .catch((error) => console.warn(`fetchStoreFromStorage error: ${error}`));
+    // Storage.getStoreFromStorage()
+    // .then(result => {
+    //   dispatch({ type: ACTIONS.SET_STORE, payload: result });
+    // })
+    // .catch((error) => console.warn(`fetchStoreFromStorage error: ${error}`));
+
+    firebaseApp.database().ref('users/testuser').on('value', (snapshot) => {
+      const results = snapshot.val();
+      dispatch({
+        type: ACTIONS.SET_STORE,
+        payload: {
+          contacts: results.contacts,
+          rotations: results.rotations
+        }
+      });
+    });
   };
 }
 
@@ -63,11 +75,17 @@ export function resetToTestData() {
 export function writeStoreToStorage(customStore) {
   return (dispatch, getStore) => {
     const store = customStore || getStore();
+
     Storage.writeStoreToStorage(store)
     .then(() => {
       // probably set some state to indicate write succeeded
     })
     .catch((error) => console.warn(error));
+
+    firebaseApp.database().ref('users/testuser').update({
+      contacts: store.contacts,
+      rotations: store.rotations
+    });
   };
 }
 
