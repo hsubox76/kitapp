@@ -12,7 +12,8 @@ function mapStateToProps(state) {
     rotations: state.rotations,
     contacts: state.contacts,
     events: state.events,
-    initialStoreLoaded: state.ui.initialStoreLoaded
+    initialStoreLoaded: state.ui.initialStoreLoaded,
+    user: state.user
   };
 }
 
@@ -63,6 +64,7 @@ UpcomingComponent.propTypes = {
   actions: PropTypes.objectOf(PropTypes.func).isRequired,
   events: PropTypes.array.isRequired,
   initialStoreLoaded: PropTypes.bool,
+  user: PropTypes.object
 };
 
 const styles = {

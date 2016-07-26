@@ -37,23 +37,65 @@ export function updateContactMethod(contactId, contactMethod) {
   return { type: ACTIONS.UPDATE_CONTACT_METHOD, payload: { contactId, contactMethod } };
 }
 
-export function fetchStoreFromStorage() {
+export function setUser(user) {
+  return { type: ACTIONS.SET_USER, payload: { user } };
+}
+
+export function createAccountWithEmail(email, password) {
   return (dispatch) => {
+    firebaseApp.auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(user => {
+        dispatch(setUser(user));
+      })
+      .catch(error => {
+        console.warn(error);
+      });
+  };
+}
+
+export function loginWithEmail(email, password) {
+  return (dispatch) => {
+    firebaseApp.auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(user => {
+        dispatch(setUser(user));
+      })
+      .catch(error => {
+        console.warn(error);
+      });
+  };
+}
+
+export function logout() {
+  return dispatch => {
+    firebaseApp.auth().signOut()
+    .then(() => {
+      dispatch(setUser(null));
+    });
+  };
+}
+
+export function fetchStoreFromStorage() {
+  return (dispatch, getStore) => {
     // Storage.getStoreFromStorage()
     // .then(result => {
     //   dispatch({ type: ACTIONS.SET_STORE, payload: result });
     // })
     // .catch((error) => console.warn(`fetchStoreFromStorage error: ${error}`));
+    const { user } = getStore();
 
-    firebaseApp.database().ref('users/testuser').on('value', (snapshot) => {
+    firebaseApp.database().ref(`users/${user.uid}`).on('value', (snapshot) => {
       const results = snapshot.val();
-      dispatch({
-        type: ACTIONS.SET_STORE,
-        payload: {
-          contacts: results.contacts,
-          rotations: results.rotations
-        }
-      });
+      if (results) {
+        dispatch({
+          type: ACTIONS.SET_STORE,
+          payload: {
+            contacts: results.contacts,
+            rotations: results.rotations
+          }
+        });
+      }
     });
   };
 }
@@ -82,7 +124,7 @@ export function writeStoreToStorage(customStore) {
     })
     .catch((error) => console.warn(error));
 
-    firebaseApp.database().ref('users/testuser').update({
+    firebaseApp.database().ref(`users/${store.user.uid}`).update({
       contacts: store.contacts,
       rotations: store.rotations
     });

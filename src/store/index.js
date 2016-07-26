@@ -14,7 +14,8 @@ const initialState = {
   ui: {
     contactModalVisible: false,
     hasUnsavedChanges: false
-  }
+  },
+  user: null
 };
 
 export const store = createStore(reducer, initialState, applyMiddleware(thunk));
