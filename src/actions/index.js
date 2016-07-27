@@ -1,6 +1,7 @@
 import { ACTIONS } from './types';
 import * as Storage from '../data/storage';
 import firebaseApp from '../api/firebase';
+import pushNotification from '../api/notification';
 import moment from 'moment';
 import { DATE_FORMAT } from '../data/constants';
 import { contacts as testContacts } from '../data/contacts';
@@ -162,5 +163,15 @@ export function updateEvents() {
         return 0;
       });
     dispatch({ type: ACTIONS.UPDATE_EVENTS, events });
+  };
+}
+
+export function schedulePushNotification() {
+  return (dispatch) => {
+    pushNotification.localNotificationSchedule({
+      message: 'Notification message!',
+      date: new Date(Date.now() + 1000)
+    });
+    // save state that event has been scheduled
   };
 }

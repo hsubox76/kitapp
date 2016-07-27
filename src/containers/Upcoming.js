@@ -50,6 +50,9 @@ class UpcomingComponent extends Component {
         <Button onPress={this.writeToFirebase}>
           write to firebase
         </Button>
+        <Button onPress={this.props.actions.schedulePushNotification}>
+          send push notification
+        </Button>
         {this.props.initialStoreLoaded &&
           <EventList events={this.props.events} />
         }
