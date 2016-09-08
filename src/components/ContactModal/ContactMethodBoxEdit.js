@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Picker } from 'react-native';
-import { METHOD_TYPE_LABELS } from '../../data/constants';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import TypePicker from './TypePicker';
 
 class ContactMethodBoxEdit extends Component {
   constructor(props) {
@@ -37,20 +37,10 @@ class ContactMethodBoxEdit extends Component {
     return (
       <View style={styles.contactRow}>
         <View style={styles.contactTypePickerContainer}>
-          <Picker
-            style={styles.contactTypePicker}
-            selectedValue={this.state.pickerValue}
+          <TypePicker
             onValueChange={this.onPickerValueChange}
-          >
-            {METHOD_TYPE_LABELS.map((method, index) => (
-              <Picker.Item
-                key={index}
-                style={styles.pickerItemStyle}
-                label={method.label.toLowerCase()}
-                value={method.type}
-              />)
-            )}
-          </Picker>
+            selectedValue={this.state.pickerValue}
+          />
         </View>
         <View style={styles.contactRowData}>
           <TextInput
@@ -78,6 +68,8 @@ ContactMethodBoxEdit.propTypes = {
   contactId: PropTypes.number.isRequired,
 };
 
+const highlightColor = '#FF5E3A';
+
 const styles = {
   contactRow: {
     height: 60,
@@ -87,17 +79,9 @@ const styles = {
     justifyContent: 'flex-start',
     margin: 2,
     borderWidth: 2,
-    borderColor: '#FF5E3A'
+    borderColor: highlightColor
   },
   contactTypePickerContainer: {
-    width: 100
-  },
-  contactTypePicker: {
-    width: 90,
-    padding: 0
-  },
-  pickerItemStyle: {
-    fontSize: 12
   },
   editIcon: {
     width: 40,
@@ -109,7 +93,7 @@ const styles = {
     justifyContent: 'center'
   },
   contactRowText: {
-    color: '#FF5E3A'
+    color: highlightColor
   },
   contactRowDataText: {
     fontSize: 16
