@@ -5,7 +5,6 @@ import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ContactMethods from './ContactMethods';
 import ContactRotations from './ContactRotations';
-import { MenuContext } from 'react-native-menu';
 
 function getContactById(contacts, contactId) {
   return contacts.find((contact) => contact.id === contactId);
@@ -74,9 +73,7 @@ class ContactModal extends Component {
         animationType="fade"
         onRequestClose={this.props.onCloseModal}
       >
-        <MenuContext>
-          {contents}
-        </MenuContext>
+        {contents}
       </Modal>
     );
   }
