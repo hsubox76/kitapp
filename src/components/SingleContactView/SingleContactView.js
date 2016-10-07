@@ -25,7 +25,7 @@ function getDaysUntilNextBirthday(birthdate) {
   return nextBirthday.diff(today, 'days');
 }
 
-class ContactModal extends Component {
+class SingleContactView extends Component {
   render() {
     let contents = null;
     const contact = this.props.selectedContact;
@@ -67,7 +67,7 @@ class ContactModal extends Component {
   }
 }
 
-ContactModal.propTypes = {
+SingleContactView.propTypes = {
   selectedContact: PropTypes.object,
   onNavigatePress: PropTypes.func,
   events: PropTypes.array,
@@ -117,4 +117,4 @@ const styles = {
   }
 };
 
-export default connect(mapStateToProps)(ContactModal);
+export default connect(mapStateToProps)(SingleContactView);

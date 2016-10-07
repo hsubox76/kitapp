@@ -1,13 +1,13 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Navigator, Text, TouchableOpacity, TouchableHighlight } from 'react-native'; 
+import { Navigator } from 'react-native'; 
 import LinearGradient from 'react-native-linear-gradient';
 import ContactList from '../components/ContactList';
 import { CONTACT_TYPE } from '../data/constants';
 
 import * as Actions from '../actions';
-import ContactModal from '../components/ContactModal/ContactModal';
+import SingleContactView from '../components/SingleContactView/SingleContactView';
 
 function filterPrimaryContactsOnly(contacts) {
   return contacts.filter((contact) => contact.connection === CONTACT_TYPE.PRIMARY);
@@ -16,7 +16,6 @@ function filterPrimaryContactsOnly(contacts) {
 function mapStateToProps(state) {
   return {
     contacts: state.contacts,
-    modalVisible: state.ui.contactModalVisible,
     initialStoreLoaded: state.ui.initialStoreLoaded
   };
 }
@@ -46,7 +45,7 @@ const ContactsComponent = (props) => {
             );
           }
           return (
-            <ContactModal
+            <SingleContactView
               selectedContact={route.contact}
               onNavigatePress={() => navigator.pop()}
             />);
@@ -56,7 +55,7 @@ const ContactsComponent = (props) => {
       />
       {/* props.modalVisible
         ? (
-        <ContactModal
+        <SingleContactView
           visible={props.modalVisible}
           onCloseModal={() => { props.actions.setModalVisibility(false); }}
         />

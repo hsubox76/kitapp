@@ -4,11 +4,8 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
 import * as Actions from '../actions';
-
-const editIcon = (<Icon name="edit" size={30} color="white" />);
 
 function mapStateToProps(state) {
   return {
