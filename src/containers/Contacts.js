@@ -1,10 +1,11 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { View, Navigator } from 'react-native';
+import { View, Text, Navigator } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ContactList from '../components/ContactList';
 import AddContactButton from '../components/AddContactButton';
+import AddContactView from '../components/AddContactView/AddContactView';
 import { CONTACT_TYPE } from '../data/constants';
 
 import * as Actions from '../actions';
@@ -40,20 +41,24 @@ const ContactsComponent = (props) => {
           if (route.index === 0) {
             return (
               <View>
+                <AddContactButton onPress={() => navigator.push({ title: 'Add Contact', index: 2 })} />
                 <ContactList
                   contacts={filterPrimaryContactsOnly(props.contacts)}
                   onNavigatePress={(title, contactId) =>
                     navigator.push({ title, contactId, index: 1 })}
                 />
-                <AddContactButton />
               </View>
             );
+          } else if (route.index === 1) {
+            return (
+              <SingleContactView
+                contactId={route.contactId}
+                onNavigatePress={() => navigator.pop()}
+              />);
+          } else if (route.index === 2) {
+            return <AddContactView onBack={() => navigator.pop()} />;
           }
-          return (
-            <SingleContactView
-              contactId={route.contactId}
-              onNavigatePress={() => navigator.pop()}
-            />);
+          return <View><Text>oops unexpected route</Text></View>;
         }}
         configureScene={() =>
           Navigator.SceneConfigs.PushFromRight}

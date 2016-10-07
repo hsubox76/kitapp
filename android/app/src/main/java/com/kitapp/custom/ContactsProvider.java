@@ -37,7 +37,7 @@ public class ContactsProvider {
     private static final List<String> JUST_ME_PROJECTION = new ArrayList<String>() {{
         add(ContactsContract.Contacts.Data.MIMETYPE);
         add(ContactsContract.Profile.DISPLAY_NAME);
-        add(Contactables.PHOTO_URI);
+//        add(Contactables.PHOTO_URI);
         add(StructuredName.DISPLAY_NAME);
         add(StructuredName.GIVEN_NAME);
         add(StructuredName.MIDDLE_NAME);
@@ -191,10 +191,10 @@ public class ContactsProvider {
                 contact.displayName = name;
             }
 
-            String rawPhotoURI = cursor.getString(cursor.getColumnIndex(Contactables.PHOTO_URI));
-            if (!TextUtils.isEmpty(rawPhotoURI)) {
-                contact.photoUri = getPhotoURIFromContactURI(rawPhotoURI, contactId);
-            }
+//            String rawPhotoURI = cursor.getString(cursor.getColumnIndex(Contactables.PHOTO_URI));
+//            if (!TextUtils.isEmpty(rawPhotoURI)) {
+//                contact.photoUri = getPhotoURIFromContactURI(rawPhotoURI, contactId);
+//            }
 
             if (mimeType.equals(StructuredName.CONTENT_ITEM_TYPE)) {
                 contact.givenName = cursor.getString(cursor.getColumnIndex(StructuredName.GIVEN_NAME));
