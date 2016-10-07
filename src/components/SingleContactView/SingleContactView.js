@@ -2,12 +2,15 @@ import React, { Component, PropTypes } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import _ from 'lodash';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ContactMethods from './ContactMethods';
 import ContactRotations from './ContactRotations';
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
+  const selectedContact = _.find(state.contacts, { id: ownProps.contactId });
   return {
+    selectedContact,
     events: state.events,
     rotations: state.rotations,
   };
@@ -29,9 +32,9 @@ class SingleContactView extends Component {
   render() {
     let contents = null;
     const contact = this.props.selectedContact;
-    const rotations = this.props.rotations.filter((rotation) => rotation.contactId === contact.id);
 
     if (contact) {
+      const rotations = this.props.rotations.filter((rotation) => rotation.contactId === contact.id);
       const daysUntilNextBirthday
         = getDaysUntilNextBirthday(contact.birthdate);
 
@@ -69,6 +72,7 @@ class SingleContactView extends Component {
 
 SingleContactView.propTypes = {
   selectedContact: PropTypes.object,
+  contactId: PropTypes.number,
   onNavigatePress: PropTypes.func,
   events: PropTypes.array,
   rotations: PropTypes.array,

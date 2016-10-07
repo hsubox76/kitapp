@@ -50,11 +50,9 @@ class ContactMethodBoxEdit extends Component {
             style={styles.contactRowTextInput}
           />
         </View>
-        <View style={styles.editIcon}>
-          <TouchableOpacity onPress={this.onOkButtonClick}>
-            <Text>OK</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.editIcon} onPress={this.onOkButtonClick}>
+          <Text>OK</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -67,41 +65,41 @@ ContactMethodBoxEdit.propTypes = {
   contactId: PropTypes.number.isRequired,
 };
 
-const highlightColor = '#FF5E3A';
-
 const styles = {
   contactRow: {
     height: 60,
-    padding: 5,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
     margin: 2,
-    // borderWidth: 2,
-    // borderColor: highlightColor
+    borderWidth: 1,
+    borderColor: '#cfc'
   },
   contactTypePickerContainer: {
+    height: 60,
+    marginLeft: 20,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   editIcon: {
     width: 40,
-    paddingRight: 10,
-    alignItems: 'flex-end'
+    height: 30,
+    marginRight: 20,
+    borderWidth: 1,
+    borderColor: 'green',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   contactRowData: {
     flex: 1,
-    justifyContent: 'center'
-  },
-  contactRowText: {
-    color: highlightColor
-  },
-  contactRowDataText: {
-    fontSize: 16
+    justifyContent: 'center',
+    marginLeft: 10,
+    marginRight: 10
   },
   contactRowTextInput: {
-    paddingTop: 0,
-    margin: 0,
     fontSize: 16,
-    color: '#999'
+    color: '#589',
+    padding: 7
   }
 };
 

@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Navigator } from 'react-native'; 
+import { Navigator } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ContactList from '../components/ContactList';
 import { CONTACT_TYPE } from '../data/constants';
@@ -40,35 +40,22 @@ const ContactsComponent = (props) => {
             return (
               <ContactList
                 contacts={filterPrimaryContactsOnly(props.contacts)}
-                onNavigatePress={(title, contact) => navigator.push({ title, contact, index: 1 })}
+                onNavigatePress={(title, contactId) => navigator.push({ title, contactId, index: 1 })}
               />
             );
           }
           return (
             <SingleContactView
-              selectedContact={route.contact}
+              contactId={route.contactId}
               onNavigatePress={() => navigator.pop()}
             />);
         }}
         configureScene={() =>
           Navigator.SceneConfigs.PushFromRight}
       />
-      {/* props.modalVisible
-        ? (
-        <SingleContactView
-          visible={props.modalVisible}
-          onCloseModal={() => { props.actions.setModalVisibility(false); }}
-        />
-        )
-        : null}
-      {true &&
-        <ContactList
-          contacts={filterPrimaryContactsOnly(props.contacts)}
-        />
-      */}
     </LinearGradient>
   );
-}
+};
 
 ContactsComponent.propTypes = {
   contacts: PropTypes.array.isRequired,
