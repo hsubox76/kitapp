@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Navigator } from 'react-native';
+import { View, Navigator } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ContactList from '../components/ContactList';
+import AddContactButton from '../components/AddContactButton';
 import { CONTACT_TYPE } from '../data/constants';
 
 import * as Actions from '../actions';
@@ -38,10 +39,14 @@ const ContactsComponent = (props) => {
         renderScene={(route, navigator) => {
           if (route.index === 0) {
             return (
-              <ContactList
-                contacts={filterPrimaryContactsOnly(props.contacts)}
-                onNavigatePress={(title, contactId) => navigator.push({ title, contactId, index: 1 })}
-              />
+              <View>
+                <ContactList
+                  contacts={filterPrimaryContactsOnly(props.contacts)}
+                  onNavigatePress={(title, contactId) =>
+                    navigator.push({ title, contactId, index: 1 })}
+                />
+                <AddContactButton />
+              </View>
             );
           }
           return (
@@ -67,7 +72,7 @@ ContactsComponent.propTypes = {
 const styles = {
   container: {
     flex: 1,
-  },
+  }
 };
 
 export default connect(mapStateToProps, mapDispatchToActions)(ContactsComponent);

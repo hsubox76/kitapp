@@ -1,14 +1,12 @@
 package com.kitapp;
 
 import android.app.Application;
-import android.util.Log;
-import android.content.Intent;
 
 import com.facebook.react.ReactApplication;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import com.kitapp.custom.CustomPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -30,7 +28,8 @@ public class MainApplication extends Application implements ReactApplication {
           new MainReactPackage(),
           new ReactNativePushNotificationPackage(),
           new VectorIconsPackage(),
-          new LinearGradientPackage()
+          new LinearGradientPackage(),
+          new CustomPackage()
       );
     }
   };
