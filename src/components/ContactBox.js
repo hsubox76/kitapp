@@ -28,7 +28,8 @@ const ContactBox = (props) => {
     <TouchableOpacity
       onPress={() => {
         props.actions.setSelectedContact(props.contact.id);
-        props.actions.setModalVisibility(true);
+        props.onPress();
+        // props.actions.setModalVisibility(true);
       }}
     >
       <LinearGradient colors={colors} style={styles.container}>
@@ -36,9 +37,6 @@ const ContactBox = (props) => {
           <Text style={styles.contactNameText} numberOfLines={1}>
               {props.contact.name}
           </Text>
-        </View>
-        <View style={styles.icon}>
-            {editIcon}
         </View>
       </LinearGradient>
     </TouchableOpacity>
@@ -49,6 +47,7 @@ ContactBox.propTypes = {
   contact: PropTypes.object,
   actions: PropTypes.object,
   modalVisible: PropTypes.bool,
+  onPress: PropTypes.func,
 };
 
 const colorMap = {
@@ -92,11 +91,6 @@ const styles = {
   },
   contactNameText: {
     color: 'white'
-  },
-  icon: {
-    width: 50,
-    alignItems: 'center',
-    justifyContent: 'center'
   }
 };
 

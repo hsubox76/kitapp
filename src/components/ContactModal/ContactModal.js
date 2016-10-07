@@ -1,22 +1,15 @@
 import React, { Component, PropTypes } from 'react';
-import { View, Text, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ContactMethods from './ContactMethods';
 import ContactRotations from './ContactRotations';
 
-function getContactById(contacts, contactId) {
-  return contacts.find((contact) => contact.id === contactId);
-}
-
 function mapStateToProps(state) {
-  const selectedContact = getContactById(state.contacts, state.ui.selectedContactId);
-  const rotations = state.rotations.filter((rotation) => rotation.contactId === selectedContact.id);
   return {
     events: state.events,
-    selectedContact,
-    rotations
+    rotations: state.rotations,
   };
 }
 
@@ -36,17 +29,16 @@ class ContactModal extends Component {
   render() {
     let contents = null;
     const contact = this.props.selectedContact;
+    const rotations = this.props.rotations.filter((rotation) => rotation.contactId === contact.id);
 
     if (contact) {
       const daysUntilNextBirthday
         = getDaysUntilNextBirthday(contact.birthdate);
 
-
-
       contents = (
-        <View style={styles.container}>
+        <View>
           <View style={styles.titleBar}>
-            <TouchableOpacity onPress={this.props.onCloseModal}>
+            <TouchableOpacity onPress={this.props.onNavigatePress}>
               <View style={styles.navButton}>
                 <Icon name="chevron-left" size={20} />
               </View>
@@ -61,35 +53,31 @@ class ContactModal extends Component {
               {daysUntilNextBirthday} days until next birthday
             </Text>
           </View>
-          <ContactRotations contact={contact} rotations={this.props.rotations} />
+          <ContactRotations contact={contact} rotations={rotations} />
           <ContactMethods contact={contact} />
         </View>
       );
     }
 
     return (
-      <Modal
-        visible={this.props.visible && !!contact}
-        animationType="fade"
-        onRequestClose={this.props.onCloseModal}
-      >
+      <View style={styles.container}>
         {contents}
-      </Modal>
+      </View>
     );
   }
 }
 
 ContactModal.propTypes = {
-  onCloseModal: PropTypes.func,
-  visible: PropTypes.bool,
   selectedContact: PropTypes.object,
+  onNavigatePress: PropTypes.func,
   events: PropTypes.array,
-  rotations: PropTypes.array
+  rotations: PropTypes.array,
 };
 
 const styles = {
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor: '#fff'
   },
   titleBar: {
     height: 50,
@@ -101,6 +89,7 @@ const styles = {
   },
   navButton: {
     width: 20,
+    marginLeft: 10,
     alignItems: 'center'
   },
   contactName: {

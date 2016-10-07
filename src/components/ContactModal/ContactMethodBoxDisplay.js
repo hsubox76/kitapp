@@ -41,8 +41,8 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'flex-start',
     margin: 2,
-    borderWidth: 2,
-    borderColor: '#FF5E3A'
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc'
   },
   contactTypeIcon: {
     width: 40,
@@ -58,7 +58,7 @@ const styles = {
     justifyContent: 'center'
   },
   contactRowText: {
-    color: '#FF5E3A'
+    color: '#666'
   },
   contactRowDataText: {
     fontSize: 16

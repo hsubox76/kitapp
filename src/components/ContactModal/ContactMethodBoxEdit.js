@@ -45,10 +45,9 @@ class ContactMethodBoxEdit extends Component {
         <View style={styles.contactRowData}>
           <TextInput
             numberOfLines={1}
-            underlineColorAndroid="black"
             onChangeText={this.onTextInputChange}
             value={this.state.textInputValue}
-            style={[styles.contactRowText, styles.contactRowDataText, styles.contactRowTextInput]}
+            style={styles.contactRowTextInput}
           />
         </View>
         <View style={styles.editIcon}>
@@ -78,8 +77,8 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'flex-start',
     margin: 2,
-    borderWidth: 2,
-    borderColor: highlightColor
+    // borderWidth: 2,
+    // borderColor: highlightColor
   },
   contactTypePickerContainer: {
   },

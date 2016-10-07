@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { View, ListView, Dimensions } from 'react-native';
+import { View, Text, ListView, Dimensions } from 'react-native';
 import ContactBox from './ContactBox';
 import ContactListHeader from './ContactListHeader';
 
@@ -29,6 +29,7 @@ class ContactList extends Component {
           <ContactBox
             key={contact.id}
             contact={contact}
+            onPress={() => this.props.onNavigatePress(contact.name, contact)}
           />
         )}
         renderSeparator={(sectionID, rowID) => <View key={rowID} style={styles.separator} />}
@@ -38,7 +39,8 @@ class ContactList extends Component {
 }
 
 ContactList.propTypes = {
-  contacts: PropTypes.array.isRequired
+  contacts: PropTypes.array.isRequired,
+  onNavigatePress: PropTypes.func,
 };
 
 const styles = {

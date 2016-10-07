@@ -23,7 +23,6 @@ function mapDispatchToActions(dispatch) {
 
 class MainApp extends Component {
   componentWillMount() {
-    // this.props.actions.writeStoreToStorage();
     this.props.actions.fetchStoreFromStorage();
   }
   componentWillReceiveProps(nextProps) {
@@ -33,7 +32,7 @@ class MainApp extends Component {
   }
   render() {
     return (
-      <TabView initialPage={0} renderTabBar={() => <TabBar />}>
+      <TabView initialPage={1} renderTabBar={() => <TabBar />}>
         <Upcoming tabLabel="clock" />
         <Contacts tabLabel="torsos" />
         <View tabLabel="widget" />
