@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { View, Text, Navigator } from 'react-native';
+import _ from 'lodash';
 import LinearGradient from 'react-native-linear-gradient';
 import ContactList from '../components/ContactList';
 import AddContactButton from '../components/AddContactButton';
@@ -12,7 +13,7 @@ import * as Actions from '../actions';
 import SingleContactView from '../components/SingleContactView/SingleContactView';
 
 function filterPrimaryContactsOnly(contacts) {
-  return contacts.filter((contact) => contact.connection === CONTACT_TYPE.PRIMARY);
+  return _.filter(contacts, (contact) => contact.connection === CONTACT_TYPE.PRIMARY);
 }
 
 function mapStateToProps(state) {
@@ -56,7 +57,11 @@ const ContactsComponent = (props) => {
                 onNavigatePress={() => navigator.pop()}
               />);
           } else if (route.index === 2) {
-            return <AddContactView onBack={() => navigator.pop()} />;
+            return (
+              <AddContactView
+                addContact={props.actions.addContact}
+                onBack={() => navigator.pop()}
+              />);
           }
           return <View><Text>oops unexpected route</Text></View>;
         }}
@@ -68,7 +73,7 @@ const ContactsComponent = (props) => {
 };
 
 ContactsComponent.propTypes = {
-  contacts: PropTypes.array.isRequired,
+  contacts: PropTypes.object.isRequired,
   actions: PropTypes.objectOf(PropTypes.func),
   initialStoreLoaded: PropTypes.bool,
   modalVisible: PropTypes.bool,

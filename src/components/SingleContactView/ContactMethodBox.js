@@ -52,7 +52,7 @@ class ContactMethodBox extends Component {
 ContactMethodBox.propTypes = {
   contactMethod: PropTypes.object,
   actions: PropTypes.objectOf(PropTypes.func),
-  contactId: PropTypes.number.isRequired
+  contactId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 
 export default connect(null, mapDispatchToActions)(ContactMethodBox);

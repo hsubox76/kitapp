@@ -35,8 +35,7 @@ class SingleContactView extends Component {
 
     if (contact) {
       const rotations = this.props.rotations.filter((rotation) => rotation.contactId === contact.id);
-      const daysUntilNextBirthday
-        = getDaysUntilNextBirthday(contact.birthdate);
+      const daysUntilNextBirthday = getDaysUntilNextBirthday(contact.birthdate);
 
       contents = (
         <View>
@@ -53,7 +52,9 @@ class SingleContactView extends Component {
           </View>
           <View style={styles.birthdayBar}>
             <Text style={styles.birthdayBarText}>
-              {daysUntilNextBirthday} days until next birthday
+              {_.has(contact, 'birthdate')
+                ? `${daysUntilNextBirthday} days until next birthday`
+                : 'you haven\'t entered a birthday for this person'}
             </Text>
           </View>
           <ContactRotations contact={contact} rotations={rotations} />
@@ -72,7 +73,7 @@ class SingleContactView extends Component {
 
 SingleContactView.propTypes = {
   selectedContact: PropTypes.object,
-  contactId: PropTypes.number,
+  contactId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onNavigatePress: PropTypes.func,
   events: PropTypes.array,
   rotations: PropTypes.array,

@@ -62,7 +62,7 @@ ContactMethodBoxEdit.propTypes = {
   contactMethod: PropTypes.object,
   closeForm: PropTypes.func,
   updateContactMethod: PropTypes.func,
-  contactId: PropTypes.number.isRequired,
+  contactId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 
 const styles = {

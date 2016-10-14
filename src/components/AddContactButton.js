@@ -6,7 +6,7 @@ const AddContactButton = (props) => (
     onPress={props.onPress}
     style={styles.addContactButton}
   >
-    <Text style={styles.addContactButtonText}>+ Add A Contact</Text>
+    <Text style={styles.addContactButtonText}>+ Import From My Contacts</Text>
   </TouchableOpacity>
 );
 

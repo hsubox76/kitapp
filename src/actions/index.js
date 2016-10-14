@@ -2,6 +2,7 @@ import { ACTIONS } from './types';
 import * as Storage from '../data/storage';
 import firebaseApp from '../api/firebase';
 import pushNotification from '../api/notification';
+import _ from 'lodash';
 import moment from 'moment';
 import { DATE_FORMAT } from '../data/constants';
 import { contacts as testContacts } from '../data/contacts';
@@ -112,6 +113,17 @@ export function resetToTestData() {
       payload: newStore
     });
     dispatch(writeStoreToStorage(newStore));
+  };
+}
+
+export function addContact(contactData) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    const newContactKey = firebaseApp.database().ref(`users/${user.uid}/contacts`).push().key;
+    firebaseApp.database().ref(`users/${user.uid}/contacts/${newContactKey}`)
+      .set(_.extend({}, contactData, {
+        id: newContactKey
+      }));
   };
 }
 

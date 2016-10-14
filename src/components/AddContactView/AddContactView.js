@@ -1,8 +1,12 @@
 import React, { Component, PropTypes } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import _ from 'lodash';
 import { ContactsAndroid } from '../../CustomModules/CustomModules';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import ContactSearchResultsList from './ContactSearchResultsList';
+import { CONTACT_TYPE, METHOD_TYPE } from '../../data/constants';
+
+const { width } = Dimensions.get('window');
 
 class AddContactView extends Component {
   constructor(props) {
@@ -27,6 +31,43 @@ class AddContactView extends Component {
   setContact(contact) {
     this.setState({ contact });
   }
+  formatAndAddContact() {
+    const contact = this.state.contact;
+    const formattedContact = {
+      connection: CONTACT_TYPE.PRIMARY,
+      name: contact.givenName,
+    };
+    const contactMethods = [];
+    if (contact.phoneNumbers.length > 0) {
+      _.forEach(contact.phoneNumbers, (phoneNumber) => {
+        contactMethods.push({
+          type: METHOD_TYPE.CALL,
+          id: contactMethods.length + 1,
+          data: phoneNumber.number
+        });
+      });
+    }
+    if (contact.emailAddresses.length > 0) {
+      _.forEach(contact.emailAddresses, (emailAddress) => {
+        contactMethods.push({
+          type: METHOD_TYPE.EMAIL,
+          id: contactMethods.length + 1,
+          data: emailAddress.email
+        });
+      });
+    }
+    if (contact.postalAddresses.length > 0) {
+      _.forEach(contact.postalAddresses, (postalAddress) => {
+        contactMethods.push({
+          type: METHOD_TYPE.POSTAL,
+          id: contactMethods.length + 1,
+          data: postalAddress.formattedAddress
+        });
+      });
+    }
+    formattedContact.contactMethods = contactMethods;
+    this.props.addContact(formattedContact);
+  }
   showContacts(contacts) {
     this.setState({
       searchResults: contacts
@@ -35,9 +76,6 @@ class AddContactView extends Component {
   renderResultsContainer() {
     return (
       <View style={styles.resultsContainer}>
-        <Text style={styles.addContactButtonText}>
-          {this.state.searchResults.length} matching contacts
-        </Text>
         <ContactSearchResultsList
           results={this.state.searchResults}
           setContact={(contact) => this.setContact(contact)}
@@ -46,9 +84,34 @@ class AddContactView extends Component {
     );
   }
   renderContact() {
+    const contact = this.state.contact;
     return (
-      <View>
-        {_.map(this.state.contact, (val, key) => <Text>{key} : {val && JSON.stringify(val)}</Text>)}
+      <View style={styles.selectedContactContainer}>
+        <TouchableOpacity
+          onPress={() => this.formatAndAddContact()}
+          style={styles.importContactButton}
+        >
+          <Text style={styles.importContactText}>import this contact</Text>
+        </TouchableOpacity>
+        <View style={styles.contactField}>
+          <Text style={styles.contactLabel}>name</Text>
+          <Text>{contact.givenName}</Text>
+        </View>
+        {contact.phoneNumbers.length > 0 &&
+          <View style={styles.contactField}>
+            <Text style={styles.contactLabel}>phone</Text>
+            <Text>{contact.phoneNumbers[0].label} : {contact.phoneNumbers[0].number}</Text>
+          </View>}
+        {contact.emailAddresses.length > 0 &&
+          <View style={styles.contactField}>
+            <Text style={styles.contactLabel}>email</Text>
+            <Text>{contact.emailAddresses[0].label} : {contact.emailAddresses[0].email}</Text>
+          </View>}
+        {contact.postalAddresses.length > 0 &&
+          <View style={styles.contactField}>
+            <Text style={styles.contactLabel}>postal</Text>
+            <Text>{contact.postalAddresses[0].label} : {contact.postalAddresses[0].formattedAddress}</Text>
+          </View>}
       </View>
     );
   }
@@ -56,9 +119,17 @@ class AddContactView extends Component {
     return (
       <View style={styles.container}>
         <TouchableOpacity style={styles.back} onPress={this.props.onBack}>
-          <Text>back</Text>
+          <Icon style={styles.backIcon} name="chevron-left" size={20} />
+          <Text style={styles.backText}>back to Contacts</Text>
         </TouchableOpacity>
-        <TextInput onChangeText={value => this.onInputChange(value)} />
+        <View style={styles.searchContainer}>
+          <Icon style={styles.searchIcon} name="search" size={24} />
+          <TextInput
+            style={styles.searchInput}
+            onChangeText={value => this.onInputChange(value)}
+            placeholder="search for contacts"
+          />
+        </View>
         {!this.state.contact && this.renderResultsContainer()}
         {this.state.contact && this.renderContact()}
       </View>
@@ -68,6 +139,7 @@ class AddContactView extends Component {
 
 AddContactView.propTypes = {
   onBack: PropTypes.func.isRequired,
+  addContact: PropTypes.func.isRequired,
 };
 
 const styles = {
@@ -79,12 +151,56 @@ const styles = {
     flex: 1
   },
   back: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#ccc'
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FF5E3A',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc'
+  },
+  backIcon: {
+    color: '#fff',
+  },
+  backText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    marginLeft: 10
+  },
+  searchContainer: {
+    marginLeft: 10,
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
+  searchInput: {
+    width: width - 80,
+    marginLeft: 10
+  },
+  searchIcon: {
+    color: '#00897B'
+  },
+  selectedContactContainer: {
+    width: width - 30,
+    marginLeft: 15
+  },
+  contactField: {
+    marginBottom: 10
+  },
+  contactLabel: {
+    fontWeight: 'bold'
   },
   addViewText: {
     fontColor: '#666'
+  },
+  importContactButton: {
+    width: 150,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FF5E3A'
+  },
+  importContactText: {
+    color: '#FF5E3A'
   }
 };
 

@@ -1,11 +1,12 @@
 import React, { PropTypes } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { METHOD_TYPE, METHOD_TYPE_ICONS } from '../../data/constants';
+import _ from 'lodash';
+import { METHOD_TYPE_ICONS } from '../../data/constants';
 
 const ContactMethodBoxDisplay = (props) => {
   const contactData = props.contactMethod.data;
-  const contactDataDisplay = props.contactMethod.type !== METHOD_TYPE.POSTAL
+  const contactDataDisplay = _.isString(props.contactMethod.data)
     ? (
     <Text
       style={[styles.contactRowText, styles.contactRowDataText]}
