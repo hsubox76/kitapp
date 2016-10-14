@@ -42,6 +42,13 @@ public class ContactsProvider {
         add(StructuredName.GIVEN_NAME);
         add(StructuredName.MIDDLE_NAME);
         add(StructuredName.FAMILY_NAME);
+        add(StructuredPostal.STREET);
+        add(StructuredPostal.CITY);
+        add(StructuredPostal.REGION);
+        add(StructuredPostal.POSTCODE);
+        add(StructuredPostal.COUNTRY);
+        add(StructuredPostal.TYPE);
+        add(StructuredPostal.FORMATTED_ADDRESS);
         add(Phone.NUMBER);
         add(Phone.TYPE);
         add(Phone.LABEL);
@@ -249,6 +256,40 @@ public class ContactsProvider {
                     }
                     contact.emails.add(new Contact.Item(label, email));
                 }
+            } else if (mimeType.equals(StructuredPostal.CONTENT_ITEM_TYPE)) {
+                int type = cursor.getInt(cursor.getColumnIndex(StructuredPostal.TYPE));
+                WritableMap postal = Arguments.createMap();
+                String formattedAddress
+                        = cursor.getString(
+                        cursor.getColumnIndex(StructuredPostal.FORMATTED_ADDRESS));
+                String street = cursor.getString(cursor.getColumnIndex(StructuredPostal.STREET));
+                String city = cursor.getString(cursor.getColumnIndex(StructuredPostal.CITY));
+                String region = cursor.getString(cursor.getColumnIndex(StructuredPostal.REGION));
+                String postcode = cursor.getString(cursor.getColumnIndex(StructuredPostal.POSTCODE));
+                String country = cursor.getString(cursor.getColumnIndex(StructuredPostal.COUNTRY));
+                postal.putString("street", street);
+                postal.putString("city", city);
+                postal.putString("region", region);
+                postal.putString("postcode", postcode);
+                postal.putString("country", country);
+
+                if (!TextUtils.isEmpty(street)) {
+                    String label;
+                    switch (type) {
+                        case StructuredPostal.TYPE_HOME:
+                            label = "home";
+                            break;
+                        case StructuredPostal.TYPE_WORK:
+                            label = "work";
+                            break;
+                        case StructuredPostal.TYPE_OTHER:
+                            label = "other";
+                            break;
+                        default:
+                            label = "other";
+                    }
+                    contact.postals.add(new Contact.Item(label, formattedAddress, postal));
+                }
             }
         }
 
@@ -287,9 +328,10 @@ public class ContactsProvider {
         private String givenName = "";
         private String middleName = "";
         private String familyName = "";
-        private String photoUri;
+        // private String photoUri;
         private List<Item> emails = new ArrayList<>();
         private List<Item> phones = new ArrayList<>();
+        private List<Item> postals = new ArrayList<>();
 
         public Contact(String contactId) {
             this.contactId = contactId;
@@ -301,7 +343,7 @@ public class ContactsProvider {
             contact.putString("givenName", TextUtils.isEmpty(givenName) ? displayName : givenName);
             contact.putString("middleName", middleName);
             contact.putString("familyName", familyName);
-            contact.putString("thumbnailPath", photoUri == null ? "" : photoUri);
+            // contact.putString("thumbnailPath", photoUri == null ? "" : photoUri);
 
             WritableArray phoneNumbers = Arguments.createArray();
             for (Item item : phones) {
@@ -321,16 +363,33 @@ public class ContactsProvider {
             }
             contact.putArray("emailAddresses", emailAddresses);
 
+            WritableArray postalAddresses = Arguments.createArray();
+            for (Item item : postals) {
+                WritableMap map = Arguments.createMap();
+                map.putMap("address", item.values);
+                map.putString("formattedAddress", item.value);
+                map.putString("label", item.label);
+                postalAddresses.pushMap(map);
+            }
+            contact.putArray("postalAddresses", postalAddresses);
+
             return contact;
         }
 
         public static class Item {
             public String label;
             public String value;
+            public WritableMap values;
 
             public Item(String label, String value) {
                 this.label = label;
                 this.value = value;
+            }
+
+            public Item(String label, String value, WritableMap values) {
+                this.label = label;
+                this.value = value;
+                this.values = values;
             }
         }
     }
