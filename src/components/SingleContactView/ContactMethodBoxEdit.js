@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import _ from 'lodash';
 import TypePicker from './TypePicker';
 
 class ContactMethodBoxEdit extends Component {
@@ -8,17 +9,28 @@ class ContactMethodBoxEdit extends Component {
     this.onTextInputChange = this.onTextInputChange.bind(this);
     this.onOkButtonClick = this.onOkButtonClick.bind(this);
     this.onPickerValueChange = this.onPickerValueChange.bind(this);
+    this.renderSingleLineData = this.renderSingleLineData.bind(this);
+    this.renderMultiLineData = this.renderMultiLineData.bind(this);
     const contactData = typeof props.contactMethod.data === 'string'
-        ? props.contactMethod.data : props.contactMethod.data.street;
+        ? [props.contactMethod.data] : _.map(props.contactMethod.data, (key, value) => {
+          return {
+            fieldName: key,
+            content: value
+          };
+        });
     this.state = {
       contactData,
-      textInputValue: contactData,
+      textInputValues: contactData,
       pickerValue: props.contactMethod.type
     };
   }
-  onTextInputChange(text) {
+  onTextInputChange(index, text) {
     // should probably do type checking to see if methodType matches method format
-    this.setState({ textInputValue: text });
+    this.setState({ textInputValues: [
+      ...this.state.textInputValues.slice(0, index),
+      text,
+      ...this.state.textInputValues.slice(index + 1)
+    ] });
   }
   onOkButtonClick() {
     this.props.updateContactMethod(this.props.contactId,
@@ -33,6 +45,30 @@ class ContactMethodBoxEdit extends Component {
     // should probably do type checking to see if methodType matches method format
     this.setState({ pickerValue: itemValue });
   }
+  renderSingleLineData() {
+    return (
+      <View style={styles.contactRowData}>
+        <TextInput
+          numberOfLines={1}
+          onChangeText={this.onTextInputChange}
+          value={this.state.textInputValues[0]}
+          style={styles.contactRowTextInput}
+        />
+      </View>
+    );
+  }
+  renderMultiLineData() {
+    return (
+      <View style={styles.contactRowData}>
+        <TextInput
+          numberOfLines={1}
+          onChangeText={this.onTextInputChange}
+          value={this.state.textInputValue}
+          style={styles.contactRowTextInput}
+        />
+      </View>
+    );
+  }
   render() {
     return (
       <View style={styles.contactRow}>
@@ -42,14 +78,7 @@ class ContactMethodBoxEdit extends Component {
             selectedValue={this.state.pickerValue}
           />
         </View>
-        <View style={styles.contactRowData}>
-          <TextInput
-            numberOfLines={1}
-            onChangeText={this.onTextInputChange}
-            value={this.state.textInputValue}
-            style={styles.contactRowTextInput}
-          />
-        </View>
+        {this.renderSingleLineData()}
         <TouchableOpacity style={styles.editIcon} onPress={this.onOkButtonClick}>
           <Text>OK</Text>
         </TouchableOpacity>

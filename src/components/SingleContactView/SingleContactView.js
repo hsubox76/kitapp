@@ -34,7 +34,7 @@ class SingleContactView extends Component {
     const contact = this.props.selectedContact;
 
     if (contact) {
-      const rotations = this.props.rotations.filter((rotation) => rotation.contactId === contact.id);
+      const rotations = _.filter(this.props.rotations, rotation => rotation.contactId === contact.id);
       const daysUntilNextBirthday = getDaysUntilNextBirthday(contact.birthdate);
 
       contents = (

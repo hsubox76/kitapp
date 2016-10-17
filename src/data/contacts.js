@@ -11,9 +11,9 @@ import {
  *   and hardcoded for system use
  * - birthdate format MM-DD-YYYY
  * **/
-export const contacts = [
-  {
-    id: 1,
+export const contacts = {
+  a: {
+    id: 'a',
     name: 'Mom',
     connection: CONTACT_TYPE.PRIMARY,
     birthdate: '09-09-1959',
@@ -47,8 +47,8 @@ export const contacts = [
       },
     ],
   },
-  {
-    id: 2,
+  b: {
+    id: 'b',
     name: 'Kevin',
     connection: CONTACT_TYPE.PRIMARY,
     birthdate: '07-07-1979',
@@ -61,12 +61,12 @@ export const contacts = [
       },
     ],
     family: [
-      { id: 3, type: FAM_TYPE.PARTNER, title: 'husband' },
-      { id: 4, type: FAM_TYPE.CHILD, title: 'kid' }
+      { id: 'c', type: FAM_TYPE.PARTNER, title: 'husband' },
+      { id: 'd', type: FAM_TYPE.CHILD, title: 'kid' }
     ]
   },
-  {
-    id: 3,
+  c: {
+    id: 'c',
     name: 'Nathalie',
     connection: CONTACT_TYPE.PRIMARY,
     birthdate: '12-07-1980',
@@ -79,14 +79,14 @@ export const contacts = [
       },
     ],
     family: [
-      { id: 2, type: FAM_TYPE.PARTNER, title: 'husband' },
-      { id: 4, type: FAM_TYPE.CHILD, title: 'kid' }
+      { id: 'b', type: FAM_TYPE.PARTNER, title: 'husband' },
+      { id: 'd', type: FAM_TYPE.CHILD, title: 'kid' }
     ]
   },
-  {
-    id: 4,
+  d: {
+    id: 'd',
     name: 'Davis',
     connection: CONTACT_TYPE.SECONDARY,
     birthdate: '01-01-2011'
   }
-];
+};

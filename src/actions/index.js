@@ -147,9 +147,9 @@ export function writeStoreToStorage(customStore) {
 export function updateEvents() {
   return (dispatch, getStore) => {
     const { rotations, contacts } = getStore();
-    const events = rotations
+    const events = _(rotations)
       .map((rotation) => {
-        const contact = contacts.find(
+        const contact = _.find(contacts,
           (con) => con.id === rotation.contactId);
         const contactMethod = contact.contactMethods
             .find(cMethod => cMethod.id === rotation.contactMethodId);
@@ -165,15 +165,8 @@ export function updateEvents() {
       // be confusing since we don't show year in this UI
       // Maybe it's better to show them but format them differently (add the year)
       .filter(event => event.timestamp.isBefore(moment().add(11, 'months')))
-      .sort((event1, event2) => {
-        if (event1.timestamp < event2.timestamp) {
-          return -1;
-        }
-        if (event1.timestamp > event2.timestamp) {
-          return 1;
-        }
-        return 0;
-      });
+      .sortBy(event => event.timestamp)
+      .value();
     dispatch({ type: ACTIONS.UPDATE_EVENTS, events });
   };
 }

@@ -1,4 +1,5 @@
 import { ACTIONS } from '../actions/types';
+import _ from 'lodash';
 
 export function contactMethods(state = [], action) {
   switch (action.type) {
@@ -25,17 +26,13 @@ export function contact(state = {}, action) {
   }
 }
 
-export default function contacts(state = [], action) {
+export default function contacts(state = {}, action) {
   switch (action.type) {
     case ACTIONS.SET_STORE:
       return action.payload.contacts;
     case ACTIONS.UPDATE_CONTACT_METHOD:
       const contactIndex = state.findIndex(con => con.id === action.payload.contactId);
-      return [
-        ...state.slice(0, contactIndex),
-        contact(state[contactIndex], action),
-        ...state.slice(contactIndex + 1)
-      ];
+      return _.extend({}, state, { [action.payload.contactId]: contact(state[action.payload.contactId], action) });
     default:
       return state;
   }
