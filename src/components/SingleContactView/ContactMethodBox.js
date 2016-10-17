@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ContactMethodBoxDisplay from './ContactMethodBoxDisplay';
@@ -17,8 +18,20 @@ class ContactMethodBox extends Component {
     this.setEditingOn = this.setEditingOn.bind(this);
     this.setEditingOff = this.setEditingOff.bind(this);
     this.state = {
-      isEditing: false
+      isEditing: props.isEditing || false
     };
+  }
+  onDeleteButtonClick() {
+    const props = this.props;
+    Alert.alert(
+      'Delete Contact Method',
+      'Delete this contact method?',
+      [
+        { text: 'Cancel', onPress: () => {} },
+        { text: 'OK', onPress: () =>
+          props.actions.deleteContactMethod(props.contactId, props.contactMethod.id) },
+      ]
+    );
   }
   setEditingOn() {
     this.setState({
@@ -26,6 +39,9 @@ class ContactMethodBox extends Component {
     });
   }
   setEditingOff() {
+    if (this.props.onCloseEdit) {
+      this.props.onCloseEdit();
+    }
     this.setState({
       isEditing: false
     });
@@ -45,14 +61,17 @@ class ContactMethodBox extends Component {
       <ContactMethodBoxDisplay
         contactMethod={props.contactMethod}
         onEditButtonClick={this.setEditingOn}
+        onDeleteButtonClick={() => this.onDeleteButtonClick()}
       />);
   }
 }
 
 ContactMethodBox.propTypes = {
   contactMethod: PropTypes.object,
+  isEditing: PropTypes.bool,
   actions: PropTypes.objectOf(PropTypes.func),
-  contactId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  contactId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onCloseEdit: PropTypes.func,
 };
 
 export default connect(null, mapDispatchToActions)(ContactMethodBox);

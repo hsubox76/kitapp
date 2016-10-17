@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { View, ListView, Dimensions } from 'react-native';
+import _ from 'lodash';
 import ContactBox from './ContactBox';
 import ContactListHeader from './ContactListHeader';
 
@@ -9,13 +10,14 @@ class ContactList extends Component {
   constructor(props) {
     super(props);
     const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
+    const sortedContacts = _.sortBy(props.contacts, 'name');
     this.state = {
-      dataSource: ds.cloneWithRows(props.contacts)
+      dataSource: ds.cloneWithRows(sortedContacts)
     };
   }
   componentWillReceiveProps(nextProps) {
     this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(nextProps.contacts)
+      dataSource: this.state.dataSource.cloneWithRows(_.sortBy(nextProps.contacts, 'name'))
     });
   }
   render() {

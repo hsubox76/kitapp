@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import _ from 'lodash';
 import TypePicker from './TypePicker';
+import { METHOD_TYPE } from '../../data/constants';
 
 class ContactMethodBoxEdit extends Component {
   constructor(props) {
@@ -11,31 +12,35 @@ class ContactMethodBoxEdit extends Component {
     this.onPickerValueChange = this.onPickerValueChange.bind(this);
     this.renderSingleLineData = this.renderSingleLineData.bind(this);
     this.renderMultiLineData = this.renderMultiLineData.bind(this);
-    const contactData = typeof props.contactMethod.data === 'string'
-        ? [props.contactMethod.data] : _.map(props.contactMethod.data, (key, value) => {
-          return {
-            fieldName: key,
-            content: value
-          };
-        });
-    this.state = {
-      contactData,
-      textInputValues: contactData,
-      pickerValue: props.contactMethod.type
-    };
+    if (props.contactMethod.type) {
+      const contactData = typeof props.contactMethod.data === 'string'
+          ? [{ value: props.contactMethod.data }] : props.contactMethod.data;
+      this.state = {
+        textInputValues: contactData,
+        pickerValue: props.contactMethod.type
+      };
+    } else {
+      this.state = {
+        textInputValues: [{ value: '' }],
+        pickerValue: METHOD_TYPE.CALL
+      };
+    }
   }
   onTextInputChange(index, text) {
     // should probably do type checking to see if methodType matches method format
-    this.setState({ textInputValues: [
+    this.setState({ textInputValues:
+    [
       ...this.state.textInputValues.slice(0, index),
-      text,
+      _.extend({}, this.state.textInputValues[index], { value: text }),
       ...this.state.textInputValues.slice(index + 1)
     ] });
   }
   onOkButtonClick() {
+    const data = this.state.textInputValues.length > 1
+      ? this.state.textInputValues : this.state.textInputValues[0].value;
     this.props.updateContactMethod(this.props.contactId,
       Object.assign({}, this.props.contactMethod, {
-        data: this.state.textInputValue,
+        data,
         type: this.state.pickerValue
       })
     );
@@ -43,6 +48,20 @@ class ContactMethodBoxEdit extends Component {
   }
   onPickerValueChange(itemValue) {
     // should probably do type checking to see if methodType matches method format
+    // changing from postal address to something else
+    if (this.state.pickerValue === METHOD_TYPE.POSTAL && itemValue !== METHOD_TYPE.POSTAL) {
+      this.state.textInputValues = [{ value: '' }];
+    }
+    // changing from something else to postal address
+    if (this.state.pickerValue !== METHOD_TYPE.POSTAL && itemValue === METHOD_TYPE.POSTAL) {
+      this.state.textInputValues = [
+        { fieldName: 'street', value: '' },
+        { fieldName: 'city', value: '' },
+        { fieldName: 'state', value: '' },
+        { fieldName: 'postcode', value: '' },
+        { fieldName: 'country', value: '' },
+      ];
+    }
     this.setState({ pickerValue: itemValue });
   }
   renderSingleLineData() {
@@ -50,8 +69,8 @@ class ContactMethodBoxEdit extends Component {
       <View style={styles.contactRowData}>
         <TextInput
           numberOfLines={1}
-          onChangeText={this.onTextInputChange}
-          value={this.state.textInputValues[0]}
+          onChangeText={text => this.onTextInputChange(0, text)}
+          value={this.state.textInputValues[0].value}
           style={styles.contactRowTextInput}
         />
       </View>
@@ -60,12 +79,16 @@ class ContactMethodBoxEdit extends Component {
   renderMultiLineData() {
     return (
       <View style={styles.contactRowData}>
-        <TextInput
-          numberOfLines={1}
-          onChangeText={this.onTextInputChange}
-          value={this.state.textInputValue}
-          style={styles.contactRowTextInput}
-        />
+        {_.map(this.state.textInputValues, (field, index) => (
+          <TextInput
+            key={index}
+            numberOfLines={1}
+            onChangeText={text => this.onTextInputChange(index, text)}
+            value={field.value}
+            placeholder={field.fieldName}
+            style={styles.contactRowTextInput}
+          />
+        ))}
       </View>
     );
   }
@@ -78,7 +101,7 @@ class ContactMethodBoxEdit extends Component {
             selectedValue={this.state.pickerValue}
           />
         </View>
-        {this.renderSingleLineData()}
+        {this.state.textInputValues.length > 1 ? this.renderMultiLineData() : this.renderSingleLineData()}
         <TouchableOpacity style={styles.editIcon} onPress={this.onOkButtonClick}>
           <Text>OK</Text>
         </TouchableOpacity>
@@ -96,9 +119,9 @@ ContactMethodBoxEdit.propTypes = {
 
 const styles = {
   contactRow: {
-    height: 60,
+    // height: 60,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'flex-start',
     margin: 2,
     borderWidth: 1,
@@ -113,6 +136,7 @@ const styles = {
   editIcon: {
     width: 40,
     height: 30,
+    marginTop: 10,
     marginRight: 20,
     borderWidth: 1,
     borderColor: 'green',

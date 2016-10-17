@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { View, Text } from 'react-native';
 import moment from 'moment';
+import _ from 'lodash';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { METHOD_TYPE_ICONS, DATE_FORMAT } from '../../data/constants';
@@ -8,8 +9,8 @@ import { METHOD_TYPE_ICONS, DATE_FORMAT } from '../../data/constants';
 const ContactRotations = (props) => {
   const contact = props.contact;
   const rotationViews = props.rotations.map((rotation, index) => {
-    const contactMethod = contact.contactMethods
-      .find(currentContactMethod => currentContactMethod.id === rotation.contactMethodId);
+    const contactMethod = _.find(contact.contactMethods,
+      currentContactMethod => currentContactMethod.id === rotation.contactMethodId);
     const everyMillis = moment.duration(...rotation.every).valueOf();
     const todayMillis = moment().valueOf();
     const startingMillis = moment(rotation.starting, DATE_FORMAT).valueOf();

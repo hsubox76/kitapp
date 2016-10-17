@@ -38,7 +38,7 @@ class SingleContactView extends Component {
       const daysUntilNextBirthday = getDaysUntilNextBirthday(contact.birthdate);
 
       contents = (
-        <View>
+        <View style={styles.container}>
           <View style={styles.titleBar}>
             <TouchableOpacity onPress={this.props.onNavigatePress}>
               <View style={styles.navButton}>
@@ -76,7 +76,7 @@ SingleContactView.propTypes = {
   contactId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onNavigatePress: PropTypes.func,
   events: PropTypes.array,
-  rotations: PropTypes.array,
+  rotations: PropTypes.object,
 };
 
 const styles = {

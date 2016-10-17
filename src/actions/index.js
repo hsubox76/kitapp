@@ -36,7 +36,12 @@ export function setSelectedContact(contactId) {
 }
 
 export function updateContactMethod(contactId, contactMethod) {
-  return { type: ACTIONS.UPDATE_CONTACT_METHOD, payload: { contactId, contactMethod } };
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    firebaseApp.database().ref(`users/${user.uid}/contacts/${contactId}/contactMethods/${contactMethod.id}`)
+      .set(contactMethod);
+    // dispatch({ type: ACTIONS.UPDATE_CONTACT_METHOD, payload: { contactId, contactMethod } });
+  };
 }
 
 export function setUser(user) {
@@ -120,10 +125,18 @@ export function addContact(contactData) {
   return (dispatch, getStore) => {
     const { user } = getStore();
     const newContactKey = firebaseApp.database().ref(`users/${user.uid}/contacts`).push().key;
-    firebaseApp.database().ref(`users/${user.uid}/contacts/${newContactKey}`)
+    return firebaseApp.database().ref(`users/${user.uid}/contacts/${newContactKey}`)
       .set(_.extend({}, contactData, {
         id: newContactKey
       }));
+  };
+}
+
+export function deleteContactMethod(contactId, methodId) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    firebaseApp.database()
+      .ref(`users/${user.uid}/contacts/${contactId}/contactMethods/${methodId}`).remove();
   };
 }
 
@@ -151,8 +164,8 @@ export function updateEvents() {
       .map((rotation) => {
         const contact = _.find(contacts,
           (con) => con.id === rotation.contactId);
-        const contactMethod = contact.contactMethods
-            .find(cMethod => cMethod.id === rotation.contactMethodId);
+        const contactMethod = _.find(contact.contactMethods,
+            cMethod => cMethod.id === rotation.contactMethodId);
         return {
           contactId: rotation.contactId,
           contactName: contact.name,

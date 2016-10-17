@@ -17,9 +17,7 @@ const ContactMethodBoxDisplay = (props) => {
     )
     : (
     <View>
-      <Text>{contactData.street}</Text>
-      <Text>{contactData.city}, {contactData.state} {contactData.postal}</Text>
-      <Text>{contactData.country}</Text>
+      <Text>{_.map(contactData, field => field.value).join(' ')}</Text>
     </View>
     );
   return (
@@ -35,6 +33,11 @@ const ContactMethodBoxDisplay = (props) => {
         {contactDataDisplay}
       </View>
       <View style={styles.editIcon}>
+        <TouchableOpacity onPress={props.onDeleteButtonClick}>
+          <Icon name="trash" size={20} style={styles.contactRowText} />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.editIcon}>
         <TouchableOpacity onPress={props.onEditButtonClick}>
           <Icon name="pencil" size={20} style={styles.contactRowText} />
         </TouchableOpacity>
@@ -46,6 +49,7 @@ const ContactMethodBoxDisplay = (props) => {
 ContactMethodBoxDisplay.propTypes = {
   contactMethod: PropTypes.object.isRequired,
   onEditButtonClick: PropTypes.func.isRequired,
+  onDeleteButtonClick: PropTypes.func.isRequired,
 };
 
 const styles = {

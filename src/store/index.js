@@ -4,8 +4,8 @@ import { reducer } from '../reducers';
 // import { contacts } from '../data/contacts';
 // import { rotations } from '../data/rotations';
 
-const contacts = [];
-const rotations = [];
+const contacts = {};
+const rotations = {};
 
 const initialState = {
   contacts,

@@ -5,7 +5,7 @@ export const rotations = {
     every: [1, 'weeks'],
     name: 'call',
     starting: '07-01-2016 00:00',
-    contactMethodId: 1
+    contactMethodId: 0
   },
   bb: {
     id: 'bb',
@@ -13,7 +13,7 @@ export const rotations = {
     every: [2, 'days'],
     name: 'text',
     starting: '07-01-2016 20:00',
-    contactMethodId: 2
+    contactMethodId: 1
   },
   cc: {
     id: 'cc',
@@ -21,7 +21,7 @@ export const rotations = {
     every: [1, 'weeks'],
     name: 'email',
     starting: '07-01-2016 00:00',
-    contactMethodId: 1
+    contactMethodId: 0
   },
   dd: {
     id: 'dd',
@@ -29,6 +29,6 @@ export const rotations = {
     every: [1, 'years'],
     name: 'birthday call',
     starting: '12-07-2016 00:00',
-    contactMethodId: 1
+    contactMethodId: 0
   },
 };

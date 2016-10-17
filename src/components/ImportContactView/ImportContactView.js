@@ -8,12 +8,13 @@ import { CONTACT_TYPE, METHOD_TYPE } from '../../data/constants';
 
 const { width } = Dimensions.get('window');
 
-class AddContactView extends Component {
+class ImportContactView extends Component {
   constructor(props) {
     super(props);
     this.renderResultsContainer = this.renderResultsContainer.bind(this);
     this.renderContact = this.renderContact.bind(this);
     this.state = {
+      contactSuccessfullyAdded: false,
       contact: null,
       searchInput: '',
       searchResults: []
@@ -21,6 +22,7 @@ class AddContactView extends Component {
   }
   onInputChange(value) {
     this.setState({
+      contactSuccessfullyAdded: false,
       contact: null,
       searchInput: value
     });
@@ -42,7 +44,7 @@ class AddContactView extends Component {
       _.forEach(contact.phoneNumbers, (phoneNumber) => {
         contactMethods.push({
           type: METHOD_TYPE.CALL,
-          id: contactMethods.length + 1,
+          id: contactMethods.length,
           data: phoneNumber.number
         });
       });
@@ -51,7 +53,7 @@ class AddContactView extends Component {
       _.forEach(contact.emailAddresses, (emailAddress) => {
         contactMethods.push({
           type: METHOD_TYPE.EMAIL,
-          id: contactMethods.length + 1,
+          id: contactMethods.length,
           data: emailAddress.email
         });
       });
@@ -60,13 +62,24 @@ class AddContactView extends Component {
       _.forEach(contact.postalAddresses, (postalAddress) => {
         contactMethods.push({
           type: METHOD_TYPE.POSTAL,
-          id: contactMethods.length + 1,
+          id: contactMethods.length,
           data: postalAddress.formattedAddress
         });
       });
     }
     formattedContact.contactMethods = contactMethods;
-    this.props.addContact(formattedContact);
+    this.props.addContact(formattedContact)
+      .then(() => {
+        this.setState({
+          contactSuccessfullyAdded: true,
+          contact: null,
+          searchInput: '',
+          searchResults: []
+        });
+      })
+      .catch(error => {
+        console.warn(`error writing contact to firebase: ${error}`);
+      });
   }
   showContacts(contacts) {
     this.setState({
@@ -122,10 +135,15 @@ class AddContactView extends Component {
           <Icon style={styles.backIcon} name="chevron-left" size={20} />
           <Text style={styles.backText}>back to Contacts</Text>
         </TouchableOpacity>
+        {this.state.contactSuccessfullyAdded &&
+          <View style={styles.successMessage}>
+            <Text style={styles.successMessageText}>Contact successfully added!</Text>
+          </View>}
         <View style={styles.searchContainer}>
           <Icon style={styles.searchIcon} name="search" size={24} />
           <TextInput
             style={styles.searchInput}
+            value={this.state.searchInput}
             onChangeText={value => this.onInputChange(value)}
             placeholder="search for contacts"
           />
@@ -137,7 +155,7 @@ class AddContactView extends Component {
   }
 }
 
-AddContactView.propTypes = {
+ImportContactView.propTypes = {
   onBack: PropTypes.func.isRequired,
   addContact: PropTypes.func.isRequired,
 };
@@ -201,7 +219,18 @@ const styles = {
   },
   importContactText: {
     color: '#FF5E3A'
+  },
+  successMessage: {
+    width: width - 20,
+    marginTop: 10,
+    marginLeft: 10,
+    borderWidth: 1,
+    borderColor: 'green',
+    padding: 5
+  },
+  successMessageText: {
+    color: 'green'
   }
 };
 
-export default AddContactView;
+export default ImportContactView;

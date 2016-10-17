@@ -62,8 +62,8 @@ class UpcomingComponent extends Component {
 }
 
 UpcomingComponent.propTypes = {
-  rotations: PropTypes.array.isRequired,
-  contacts: PropTypes.array.isRequired,
+  rotations: PropTypes.object.isRequired,
+  contacts: PropTypes.object.isRequired,
   actions: PropTypes.objectOf(PropTypes.func).isRequired,
   events: PropTypes.array.isRequired,
   initialStoreLoaded: PropTypes.bool,

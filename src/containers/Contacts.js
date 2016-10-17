@@ -6,7 +6,7 @@ import _ from 'lodash';
 import LinearGradient from 'react-native-linear-gradient';
 import ContactList from '../components/ContactList';
 import AddContactButton from '../components/AddContactButton';
-import AddContactView from '../components/AddContactView/AddContactView';
+import ImportContactView from '../components/ImportContactView/ImportContactView';
 import { CONTACT_TYPE } from '../data/constants';
 
 import * as Actions from '../actions';
@@ -58,7 +58,7 @@ const ContactsComponent = (props) => {
               />);
           } else if (route.index === 2) {
             return (
-              <AddContactView
+              <ImportContactView
                 addContact={props.actions.addContact}
                 onBack={() => navigator.pop()}
               />);

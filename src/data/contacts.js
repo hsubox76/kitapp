@@ -20,30 +20,30 @@ export const contacts = {
     rotationIds: [1, 2],
     contactMethods: [
       {
-        id: 1,
+        id: 0,
         type: METHOD_TYPE.CALL,
         data: '555-555-1234'
       },
       {
-        id: 2,
+        id: 1,
         type: METHOD_TYPE.TEXT,
         data: '555-111-1234'
       },
       {
-        id: 3,
+        id: 2,
         type: METHOD_TYPE.EMAIL,
         data: 'mom@mom.mom'
       },
       {
-        id: 4,
+        id: 3,
         type: METHOD_TYPE.POSTAL,
-        data: {
-          street: '123 Fake Street',
-          city: 'Faketown',
-          state: 'CA',
-          postal: '90210',
-          country: 'USA'
-        }
+        data: [
+          { fieldName: 'street', value: '123 Fake Street' },
+          { fieldName: 'city', value: 'Faketown' },
+          { fieldName: 'state', value: 'CA' },
+          { fieldName: 'postcode', value: '90210' },
+          { fieldName: 'country', value: 'USA' },
+        ]
       },
     ],
   },
@@ -55,7 +55,7 @@ export const contacts = {
     rotationsIds: [3],
     contactMethods: [
       {
-        id: 1,
+        id: 0,
         type: METHOD_TYPE.EMAIL,
         data: 'kevin@kevin.kevin'
       },
@@ -73,7 +73,7 @@ export const contacts = {
     rotationsIds: [4],
     contactMethods: [
       {
-        id: 1,
+        id: 0,
         type: METHOD_TYPE.CALL,
         data: '555-123-4567'
       },

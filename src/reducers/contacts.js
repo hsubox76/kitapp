@@ -31,7 +31,6 @@ export default function contacts(state = {}, action) {
     case ACTIONS.SET_STORE:
       return action.payload.contacts;
     case ACTIONS.UPDATE_CONTACT_METHOD:
-      const contactIndex = state.findIndex(con => con.id === action.payload.contactId);
       return _.extend({}, state, { [action.payload.contactId]: contact(state[action.payload.contactId], action) });
     default:
       return state;
