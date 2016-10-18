@@ -1,24 +1,23 @@
 import React, { PropTypes } from 'react';
-import { View, Text } from 'react-native';
+import { TouchableOpacity, View, Text } from 'react-native';
 import moment from 'moment';
 import _ from 'lodash';
-import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { METHOD_TYPE_ICONS, DATE_FORMAT } from '../../data/constants';
+import { METHOD_TYPE_ICONS } from '../../data/constants';
+import { getMillisUntilNextEvent } from '../../utils/utils';
 
 const ContactRotations = (props) => {
   const contact = props.contact;
   const rotationViews = props.rotations.map((rotation, index) => {
     const contactMethod = _.find(contact.contactMethods,
       currentContactMethod => currentContactMethod.id === rotation.contactMethodId);
-    const everyMillis = moment.duration(...rotation.every).valueOf();
-    const todayMillis = moment().valueOf();
-    const startingMillis = moment(rotation.starting, DATE_FORMAT).valueOf();
-    const millisSinceStart = todayMillis - startingMillis;
-    const remainderMillis = millisSinceStart % everyMillis;
-    const millisTillNext = everyMillis - remainderMillis;
+    const millisTillNext = getMillisUntilNextEvent(rotation);
     return (
-      <LinearGradient style={styles.rotationRow} colors={['#FF9500', '#FF5E3A']} key={index}>
+      <TouchableOpacity
+        style={styles.rotationRow}
+        key={index}
+        onPress={() => props.onRotationPress(rotation)}
+      >
         <View style={styles.contactTypeIcon}>
           <Icon
             name={METHOD_TYPE_ICONS[contactMethod.type]}
@@ -33,7 +32,7 @@ const ContactRotations = (props) => {
             next in {moment.duration(millisTillNext).humanize()}
           </Text>
         </View>
-      </LinearGradient>
+      </TouchableOpacity>
     );
   });
   return (
@@ -45,7 +44,8 @@ const ContactRotations = (props) => {
 
 ContactRotations.propTypes = {
   contact: PropTypes.object.isRequired,
-  rotations: PropTypes.array.isRequired
+  rotations: PropTypes.array.isRequired,
+  onRotationPress: PropTypes.func.isRequired,
 };
 
 const styles = {
@@ -55,7 +55,8 @@ const styles = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    margin: 2
+    margin: 2,
+    backgroundColor: '#FF9500'
   },
   contactTypeIcon: {
     width: 40,

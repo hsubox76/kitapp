@@ -8,10 +8,11 @@ import ContactList from '../components/ContactList';
 import AddContactButton from '../components/AddContactButton';
 import ImportContactView from '../components/ImportContactView/ImportContactView';
 import NewContactView from '../components/SingleContactView/NewContactView';
+import SingleContactView from '../components/SingleContactView/SingleContactView';
+import SingleRotationView from '../components/SingleRotationView/SingleRotationView';
 import { CONTACT_TYPE } from '../data/constants';
 
 import * as Actions from '../actions';
-import SingleContactView from '../components/SingleContactView/SingleContactView';
 
 function filterPrimaryContactsOnly(contacts) {
   return _.filter(contacts, (contact) => contact.connection === CONTACT_TYPE.PRIMARY);
@@ -59,7 +60,8 @@ const ContactsComponent = (props) => {
             return (
               <SingleContactView
                 contactId={route.contactId}
-                onNavigatePress={() => navigator.pop()}
+                onBack={() => navigator.pop()}
+                onRotationPress={(rotation) => navigator.push({ title: rotation.name, index: 4, rotation })}
               />);
           } else if (route.index === 2) {
             return (
@@ -71,7 +73,14 @@ const ContactsComponent = (props) => {
             return (
               <NewContactView
                 addContact={props.actions.addContact}
-                onNavigatePress={() => navigator.pop()}
+                onBack={() => navigator.pop()}
+              />
+            );
+          } else if (route.index === 4) {
+            return (
+              <SingleRotationView
+                onBack={() => navigator.pop()}
+                rotation={route.rotation}
               />
             );
           }

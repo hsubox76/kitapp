@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, Alert } from 'react-native';
+import { ScrollView, View, Text, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import _ from 'lodash';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import ContactMethods from './ContactMethods';
+import ContactMethods from '../ContactMethods/ContactMethods';
 import ContactRotations from './ContactRotations';
+import NavHeader from '../SharedComponents/NavHeader';
 import * as Actions from '../../actions';
 
 function mapStateToProps(state, ownProps) {
@@ -52,7 +52,7 @@ class SingleContactView extends Component {
   deleteContact() {
     this.props.deleteContact(this.props.contactId)
       .then(() => {
-        this.props.onNavigatePress();
+        this.props.onBack();
       });
   }
   render() {
@@ -60,27 +60,17 @@ class SingleContactView extends Component {
     const contact = this.props.selectedContact;
 
     if (contact) {
-      const rotations = _.filter(this.props.rotations, rotation => rotation.contactId === contact.id);
+      const rotations = _.filter(this.props.rotations,
+        rotation => rotation.contactId === contact.id);
       const daysUntilNextBirthday = getDaysUntilNextBirthday(contact.birthdate);
 
       contents = (
         <View style={styles.container}>
-          <View style={styles.titleBar}>
-            <TouchableOpacity onPress={this.props.onNavigatePress}>
-              <View style={styles.navButton}>
-                <Icon name="chevron-left" size={20} />
-              </View>
-            </TouchableOpacity>
-            <View style={styles.contactName}>
-              <Text style={styles.nameText}>{contact.name}</Text>
-            </View>
-            <TouchableOpacity onPress={() => this.onDeletePress()}>
-              <View style={styles.navButton}>
-                <Icon name="trash" size={20} />
-              </View>
-            </TouchableOpacity>
-            <View style={styles.navButton} />
-          </View>
+          <NavHeader
+            title={contact.name}
+            onBack={this.props.onBack}
+            onEdit={() => this.onDeletePress()}
+          />
           <View style={styles.birthdayBar}>
             <Text style={styles.birthdayBarText}>
               {_.has(contact, 'birthdate')
@@ -89,7 +79,7 @@ class SingleContactView extends Component {
             </Text>
           </View>
           <ScrollView style={{ flex: 1 }}>
-            <ContactRotations contact={contact} rotations={rotations} />
+            <ContactRotations onRotationPress={this.props.onRotationPress} contact={contact} rotations={rotations} />
             <ContactMethods
               contact={contact}
               onContactMethodUpdate={
@@ -113,39 +103,18 @@ class SingleContactView extends Component {
 SingleContactView.propTypes = {
   selectedContact: PropTypes.object,
   contactId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  onNavigatePress: PropTypes.func,
+  onBack: PropTypes.func,
   events: PropTypes.array,
   rotations: PropTypes.object,
   updateContactMethod: PropTypes.func.isRequired,
   deleteContact: PropTypes.func,
+  onRotationPress: PropTypes.func.isRequired,
 };
 
 const styles = {
   container: {
     flex: 1,
     backgroundColor: '#fff'
-  },
-  titleBar: {
-    height: 50,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: '#FF5E3A'
-  },
-  navButton: {
-    width: 20,
-    marginLeft: 10,
-    alignItems: 'center'
-  },
-  contactName: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  nameText: {
-    fontSize: 24,
-    color: '#FF5E3A'
   },
   birthdayBar: {
     height: 30,

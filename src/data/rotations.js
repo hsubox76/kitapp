@@ -3,7 +3,7 @@ export const rotations = {
     id: 'aa',
     contactId: 'a',
     every: [1, 'weeks'],
-    name: 'call',
+    name: 'check-in call',
     starting: '07-01-2016 00:00',
     contactMethodId: 0
   },
@@ -19,7 +19,7 @@ export const rotations = {
     id: 'cc',
     contactId: 'b',
     every: [1, 'weeks'],
-    name: 'email',
+    name: 'how you doing email',
     starting: '07-01-2016 00:00',
     contactMethodId: 0
   },

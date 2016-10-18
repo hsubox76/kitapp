@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, TextInput, TouchableOpacity } from 'react-native';
 import _ from 'lodash';
 import TypePicker from './TypePicker';
 import Icon from 'react-native-vector-icons/FontAwesome';

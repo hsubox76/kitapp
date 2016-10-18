@@ -4,26 +4,9 @@ import firebaseApp from '../api/firebase';
 import pushNotification from '../api/notification';
 import _ from 'lodash';
 import moment from 'moment';
-import { DATE_FORMAT } from '../data/constants';
 import { contacts as testContacts } from '../data/contacts';
 import { rotations as testRotations } from '../data/rotations';
-
-// Helper functions
-
-export function getTimestampOfNextEvent(rotation) {
-  const startMoment = moment(rotation.starting, DATE_FORMAT);
-  if (startMoment.isAfter(moment())) {
-    return startMoment;
-  }
-  const everyMillis = moment.duration(...rotation.every).valueOf();
-  const todayMillis = moment().valueOf();
-  const startingMillis = startMoment.valueOf();
-  const millisSinceStart = todayMillis - startingMillis;
-  const remainderMillis = millisSinceStart % everyMillis;
-  const millisTillNext = everyMillis - remainderMillis;
-  const nextEventMoment = moment(todayMillis + millisTillNext);
-  return nextEventMoment;
-}
+import { getTimestampOfNextEvent } from '../utils/utils';
 
 // Action creators
 
@@ -38,7 +21,8 @@ export function setSelectedContact(contactId) {
 export function updateContactMethod(contactId, contactMethod) {
   return (dispatch, getStore) => {
     const { user } = getStore();
-    firebaseApp.database().ref(`users/${user.uid}/contacts/${contactId}/contactMethods/${contactMethod.id}`)
+    firebaseApp.database()
+      .ref(`users/${user.uid}/contacts/${contactId}/contactMethods/${contactMethod.id}`)
       .set(contactMethod);
     // dispatch({ type: ACTIONS.UPDATE_CONTACT_METHOD, payload: { contactId, contactMethod } });
   };

@@ -4,7 +4,8 @@ import { View, Text, TextInput, TouchableOpacity,
 import Icon from 'react-native-vector-icons/FontAwesome';
 import moment from 'moment';
 import _ from 'lodash';
-import ContactMethods from './ContactMethods';
+import ContactMethods from '../ContactMethods/ContactMethods';
+import NavHeader from '../SharedComponents/NavHeader';
 import { CONTACT_TYPE } from '../../data/constants';
 
 const { width } = Dimensions.get('window');
@@ -61,7 +62,7 @@ class NewContactView extends Component {
     }
     this.props.addContact(newContact)
       .then(() => {
-        this.props.onNavigatePress();
+        this.props.onBack();
       })
       .catch(error => console.warn(error));
   }
@@ -69,17 +70,10 @@ class NewContactView extends Component {
     const newContact = { contactMethods: this.state.contactMethods };
     return (
       <View style={styles.container}>
-        <View style={styles.titleBar}>
-          <TouchableOpacity onPress={this.props.onNavigatePress}>
-            <View style={styles.navButton}>
-              <Icon name="chevron-left" size={20} />
-            </View>
-          </TouchableOpacity>
-          <View style={styles.contactName}>
-            <Text style={styles.nameText}>Add New Contact</Text>
-          </View>
-          <View style={styles.navButton} />
-        </View>
+        <NavHeader
+          title="Add New Contact"
+          onBack={this.props.onBack}
+        />
         <View style={styles.formContainer}>
           <View style={styles.formRow}>
             <View style={styles.formLabel}><Text style={styles.formLabelText}>name</Text></View>
@@ -107,7 +101,7 @@ class NewContactView extends Component {
 }
 
 NewContactView.propTypes = {
-  onNavigatePress: PropTypes.func,
+  onBack: PropTypes.func,
   addContact: PropTypes.func,
   events: PropTypes.array,
   rotations: PropTypes.object,
