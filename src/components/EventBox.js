@@ -1,33 +1,55 @@
-import React, { PropTypes } from 'react';
-import { View, Text } from 'react-native';
+import React, { Component, PropTypes } from 'react';
+import { TouchableOpacity, View, Text, Linking } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { METHOD_TYPE_ICONS } from '../data/constants';
+import { METHOD_TYPE, METHOD_TYPE_ICONS } from '../data/constants';
 
 
-const EventBox = (props) => (
-  <LinearGradient colors={colorMap.call} style={styles.container}>
-    <View style={styles.date}>
-      <View style={styles.month}>
-        <Text style={styles.monthText}>
-          {moment(props.event.timestamp).format('MMM').toUpperCase()}
-        </Text>
-      </View>
-      <View style={styles.day}>
-        <Text style={styles.dayText}>{moment(props.event.timestamp).format('D')}</Text>
-      </View>
-    </View>
-    <View style={styles.eventName}>
-      <Text style={styles.eventNameText} numberOfLines={2}>
-        {props.event.name} ({props.event.contactName})
-      </Text>
-    </View>
-    <View style={styles.icon}>
-      <Icon name={METHOD_TYPE_ICONS[props.event.contactMethod.type]} size={25} color="white" />
-    </View>
-  </LinearGradient>
-);
+class EventBox extends Component {
+  onPress() {
+    switch (this.props.event.contactMethod.type) {
+      case METHOD_TYPE.CALL:
+        Linking.openURL(`tel:${this.props.event.contactMethod.data}`);
+        break;
+      case METHOD_TYPE.TEXT:
+        Linking.openURL(`sms:${this.props.event.contactMethod.data}`);
+        break;
+      case METHOD_TYPE.EMAIL:
+        Linking.openURL(`mailto:${this.props.event.contactMethod.data}`);
+        break;
+      default:
+        console.warn('unknown contact method type');
+    }
+  }
+  render() {
+    const props = this.props;
+    return (
+      <LinearGradient colors={colorMap.call} style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={() => this.onPress()}>
+          <View style={styles.date}>
+            <View style={styles.month}>
+              <Text style={styles.monthText}>
+                {moment(props.event.timestamp).format('MMM').toUpperCase()}
+              </Text>
+            </View>
+            <View style={styles.day}>
+              <Text style={styles.dayText}>{moment(props.event.timestamp).format('D')}</Text>
+            </View>
+          </View>
+          <View style={styles.eventName}>
+            <Text style={styles.eventNameText} numberOfLines={2}>
+              {props.event.name} ({props.event.contactName})
+            </Text>
+          </View>
+          <View style={styles.icon}>
+            <Icon name={METHOD_TYPE_ICONS[props.event.contactMethod.type]} size={25} color="white" />
+          </View>
+        </TouchableOpacity>
+      </LinearGradient>
+    );
+  }
+}
 
 EventBox.propTypes = {
   event: PropTypes.object,
@@ -40,6 +62,7 @@ const colorMap = {
 
 const styles = {
   container: {
+    flex: 1,
     height: 50,
     flexDirection: 'row'
   },
@@ -80,6 +103,6 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center'
   }
-}
+};
 
 export default EventBox;
