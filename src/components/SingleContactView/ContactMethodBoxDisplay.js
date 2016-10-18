@@ -32,7 +32,7 @@ const ContactMethodBoxDisplay = (props) => {
       <View style={styles.contactRowData}>
         {contactDataDisplay}
       </View>
-      <View style={styles.editIcon}>
+      <View style={styles.deleteIcon}>
         <TouchableOpacity onPress={props.onDeleteButtonClick}>
           <Icon name="trash" size={20} style={styles.contactRowText} />
         </TouchableOpacity>
@@ -67,8 +67,13 @@ const styles = {
     width: 40,
     marginLeft: 20
   },
+  deleteIcon: {
+    width: 20,
+    marginRight: 30,
+    alignItems: 'flex-end'
+  },
   editIcon: {
-    width: 40,
+    width: 20,
     marginRight: 20,
     alignItems: 'flex-end'
   },

@@ -1,18 +1,22 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { PropTypes } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 // import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const ContactListHeader = () => (
+const ContactListHeader = (props) => (
   <View colors={['#DBDDDE', '#898C90']} style={styles.container}>
     <View style={styles.titleContainer}>
       <Text style={styles.titleText}>Contacts</Text>
     </View>
-    <View style={styles.iconContainer}>
+    <TouchableOpacity style={styles.iconContainer} onPress={props.onAddContactPress}>
       <Icon name="md-add-circle" size={25} color={mainColor} />
-    </View>
+    </TouchableOpacity>
   </View>
 );
+
+ContactListHeader.propTypes = {
+  onAddContactPress: PropTypes.func,
+};
 
 const mainColor = '#FF5E3A';
 

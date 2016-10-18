@@ -51,10 +51,9 @@ class ContactMethodBox extends Component {
     if (this.state.isEditing) {
       return (
         <ContactMethodBoxEdit
-          contactId={props.contactId}
           contactMethod={props.contactMethod}
           closeForm={this.setEditingOff}
-          updateContactMethod={this.props.actions.updateContactMethod}
+          onContactMethodUpdate={this.props.onContactMethodUpdate}
         />);
     }
     return (
@@ -72,6 +71,7 @@ ContactMethodBox.propTypes = {
   actions: PropTypes.objectOf(PropTypes.func),
   contactId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onCloseEdit: PropTypes.func,
+  onContactMethodUpdate: PropTypes.func.isRequired,
 };
 
 export default connect(null, mapDispatchToActions)(ContactMethodBox);

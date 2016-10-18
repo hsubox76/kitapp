@@ -7,6 +7,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import ContactList from '../components/ContactList';
 import AddContactButton from '../components/AddContactButton';
 import ImportContactView from '../components/ImportContactView/ImportContactView';
+import NewContactView from '../components/SingleContactView/NewContactView';
 import { CONTACT_TYPE } from '../data/constants';
 
 import * as Actions from '../actions';
@@ -42,9 +43,13 @@ const ContactsComponent = (props) => {
           if (route.index === 0) {
             return (
               <View>
-                <AddContactButton onPress={() => navigator.push({ title: 'Add Contact', index: 2 })} />
+                <AddContactButton
+                  onPress={() =>
+                    navigator.push({ title: 'Add Contact', index: 2 })}
+                />
                 <ContactList
                   contacts={filterPrimaryContactsOnly(props.contacts)}
+                  onAddContactPress={() => navigator.push({ title: 'Add New Contact', index: 3 })}
                   onNavigatePress={(title, contactId) =>
                     navigator.push({ title, contactId, index: 1 })}
                 />
@@ -62,6 +67,13 @@ const ContactsComponent = (props) => {
                 addContact={props.actions.addContact}
                 onBack={() => navigator.pop()}
               />);
+          } else if (route.index === 3) {
+            return (
+              <NewContactView
+                addContact={props.actions.addContact}
+                onNavigatePress={() => navigator.pop()}
+              />
+            );
           }
           return <View><Text>oops unexpected route</Text></View>;
         }}

@@ -1,11 +1,12 @@
 import React, { Component, PropTypes } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import _ from 'lodash';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ContactMethods from './ContactMethods';
 import ContactRotations from './ContactRotations';
+import * as Actions from '../../actions';
 
 function mapStateToProps(state, ownProps) {
   const selectedContact = _.find(state.contacts, { id: ownProps.contactId });
@@ -13,6 +14,14 @@ function mapStateToProps(state, ownProps) {
     selectedContact,
     events: state.events,
     rotations: state.rotations,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    updateContactMethod:
+      (contactId, contactMethod) => dispatch(Actions.updateContactMethod(contactId, contactMethod)),
+    deleteContact: (id) => dispatch(Actions.deleteContact(id))
   };
 }
 
@@ -29,6 +38,23 @@ function getDaysUntilNextBirthday(birthdate) {
 }
 
 class SingleContactView extends Component {
+  onDeletePress() {
+    const props = this.props;
+    Alert.alert(
+      'Delete Contact',
+      `Delete contact ${props.selectedContact.name}?`,
+      [
+        { text: 'Cancel', onPress: () => {} },
+        { text: 'OK', onPress: () => this.deleteContact() },
+      ]
+    );
+  }
+  deleteContact() {
+    this.props.deleteContact(this.props.contactId)
+      .then(() => {
+        this.props.onNavigatePress();
+      });
+  }
   render() {
     let contents = null;
     const contact = this.props.selectedContact;
@@ -48,6 +74,11 @@ class SingleContactView extends Component {
             <View style={styles.contactName}>
               <Text style={styles.nameText}>{contact.name}</Text>
             </View>
+            <TouchableOpacity onPress={() => this.onDeletePress()}>
+              <View style={styles.navButton}>
+                <Icon name="trash" size={20} />
+              </View>
+            </TouchableOpacity>
             <View style={styles.navButton} />
           </View>
           <View style={styles.birthdayBar}>
@@ -57,8 +88,16 @@ class SingleContactView extends Component {
                 : 'you haven\'t entered a birthday for this person'}
             </Text>
           </View>
-          <ContactRotations contact={contact} rotations={rotations} />
-          <ContactMethods contact={contact} />
+          <ScrollView style={{ flex: 1 }}>
+            <ContactRotations contact={contact} rotations={rotations} />
+            <ContactMethods
+              contact={contact}
+              onContactMethodUpdate={
+                // bind contact ID here, lower views need only worry about contactMethod
+                (contactMethod) => this.props.updateContactMethod(contact.id, contactMethod)
+              }
+            />
+          </ScrollView>
         </View>
       );
     }
@@ -77,6 +116,8 @@ SingleContactView.propTypes = {
   onNavigatePress: PropTypes.func,
   events: PropTypes.array,
   rotations: PropTypes.object,
+  updateContactMethod: PropTypes.func.isRequired,
+  deleteContact: PropTypes.func,
 };
 
 const styles = {
@@ -122,4 +163,4 @@ const styles = {
   }
 };
 
-export default connect(mapStateToProps)(SingleContactView);
+export default connect(mapStateToProps, mapDispatchToProps)(SingleContactView);

@@ -24,22 +24,25 @@ function mapDispatchToActions(dispatch) {
 
 const ContactBox = (props) => {
   const colors = colorMap.meet;
-  return (
-    <TouchableOpacity
-      onPress={() => {
-        props.actions.setSelectedContact(props.contact.id);
-        props.onPress();
-      }}
-    >
-      <LinearGradient colors={colors} style={styles.container}>
-        <View style={styles.contactName}>
-          <Text style={styles.contactNameText} numberOfLines={1}>
-              {props.contact.name}
-          </Text>
-        </View>
-      </LinearGradient>
-    </TouchableOpacity>
-  );
+  if (props.contact) {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          props.actions.setSelectedContact(props.contact.id);
+          props.onPress();
+        }}
+      >
+        <LinearGradient colors={colors} style={styles.container}>
+          <View style={styles.contactName}>
+            <Text style={styles.contactNameText} numberOfLines={1}>
+                {props.contact.name}
+            </Text>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>
+    );
+  }
+  return <View />;
 };
 
 ContactBox.propTypes = {

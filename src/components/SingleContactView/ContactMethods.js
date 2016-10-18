@@ -1,5 +1,5 @@
 import React, { PropTypes, Component } from 'react';
-import { TouchableOpacity, ScrollView, View, Dimensions } from 'react-native';
+import { TouchableOpacity, View, Dimensions, Text } from 'react-native';
 import _ from 'lodash';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ContactMethodBox from './ContactMethodBox';
@@ -30,12 +30,16 @@ class ContactMethods extends Component {
     const contactMethods = _.map(contact.contactMethods,
         (contactMethod, index) => (
           <View key={index} >
-            <ContactMethodBox contactId={contact.id} contactMethod={contactMethod} />
+            <ContactMethodBox
+              contactId={contact.id}
+              contactMethod={contactMethod}
+              onContactMethodUpdate={this.props.onContactMethodUpdate}
+            />
           </View>
           )
         );
     return (
-      <ScrollView style={{ flex: 1 }}>
+      <View>
         {contactMethods}
         {this.state.addingNewMethod
           ?
@@ -43,20 +47,23 @@ class ContactMethods extends Component {
             isEditing
             contactId={contact.id}
             onCloseEdit={this.onMethodAdded}
+            onContactMethodUpdate={this.props.onContactMethodUpdate}
             contactMethod={{ id: contactMethods.length }}
           />
           :
           <TouchableOpacity style={styles.addMethodButton} onPress={() => this.onAddNewMethod()}>
             <Icon name="plus" size={20} style={styles.addMethodButtonText} />
+            <Text>add contact method</Text>
           </TouchableOpacity>
         }
-      </ScrollView>
+      </View>
     );
   }
 }
 
 ContactMethods.propTypes = {
-  contact: PropTypes.object.isRequired
+  contact: PropTypes.object.isRequired,
+  onContactMethodUpdate: PropTypes.func.isRequired,
 };
 
 const styles = {

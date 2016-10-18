@@ -132,6 +132,13 @@ export function addContact(contactData) {
   };
 }
 
+export function deleteContact(id) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    return firebaseApp.database().ref(`users/${user.uid}/contacts/${id}`).remove();
+  };
+}
+
 export function deleteContactMethod(contactId, methodId) {
   return (dispatch, getStore) => {
     const { user } = getStore();

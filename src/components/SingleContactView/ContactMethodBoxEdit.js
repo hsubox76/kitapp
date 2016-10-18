@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import _ from 'lodash';
 import TypePicker from './TypePicker';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { METHOD_TYPE } from '../../data/constants';
 
 class ContactMethodBoxEdit extends Component {
@@ -17,11 +18,13 @@ class ContactMethodBoxEdit extends Component {
           ? [{ value: props.contactMethod.data }] : props.contactMethod.data;
       this.state = {
         textInputValues: contactData,
+        id: props.contactMethod.id,
         pickerValue: props.contactMethod.type
       };
     } else {
       this.state = {
         textInputValues: [{ value: '' }],
+        id: null,
         pickerValue: METHOD_TYPE.CALL
       };
     }
@@ -38,12 +41,16 @@ class ContactMethodBoxEdit extends Component {
   onOkButtonClick() {
     const data = this.state.textInputValues.length > 1
       ? this.state.textInputValues : this.state.textInputValues[0].value;
-    this.props.updateContactMethod(this.props.contactId,
+    this.props.onContactMethodUpdate(
       Object.assign({}, this.props.contactMethod, {
         data,
+        id: this.state.id,
         type: this.state.pickerValue
       })
     );
+    this.props.closeForm();
+  }
+  onCancelButtonClick() {
     this.props.closeForm();
   }
   onPickerValueChange(itemValue) {
@@ -102,8 +109,11 @@ class ContactMethodBoxEdit extends Component {
           />
         </View>
         {this.state.textInputValues.length > 1 ? this.renderMultiLineData() : this.renderSingleLineData()}
-        <TouchableOpacity style={styles.editIcon} onPress={this.onOkButtonClick}>
-          <Text>OK</Text>
+        <TouchableOpacity style={styles.okButton} onPress={this.onOkButtonClick}>
+          <Icon name="check-circle" size={20} style={styles.okButtonText} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.okButton} onPress={() => this.onCancelButtonClick()}>
+          <Icon name="times" size={20} style={styles.cancelButtonText} />
         </TouchableOpacity>
       </View>
     );
@@ -113,8 +123,7 @@ class ContactMethodBoxEdit extends Component {
 ContactMethodBoxEdit.propTypes = {
   contactMethod: PropTypes.object,
   closeForm: PropTypes.func,
-  updateContactMethod: PropTypes.func,
-  contactId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  onContactMethodUpdate: PropTypes.func
 };
 
 const styles = {
@@ -133,15 +142,19 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center'
   },
-  editIcon: {
-    width: 40,
+  okButton: {
+    width: 20,
     height: 30,
     marginTop: 10,
     marginRight: 20,
-    borderWidth: 1,
-    borderColor: 'green',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  okButtonText: {
+    color: 'green'
+  },
+  cancelButtonText: {
+    color: '#999'
   },
   contactRowData: {
     flex: 1,
