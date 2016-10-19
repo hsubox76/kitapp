@@ -1,7 +1,7 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { View, Text, Navigator, ActivityIndicator } from 'react-native';
+import { View, Text, Navigator, ActivityIndicator, BackAndroid } from 'react-native';
 import _ from 'lodash';
 import LinearGradient from 'react-native-linear-gradient';
 import ContactList from '../components/ContactList';
@@ -32,74 +32,91 @@ function mapDispatchToActions(dispatch) {
   };
 }
 
-const ContactsComponent = (props) => {
-  const routes = [
-    { title: 'Contacts', index: 0 }
-  ];
-  if (!props.initialStoreLoaded) {
-    return (
-      <View style={styles.spinnerContainer}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+class ContactsComponent extends Component {
+  constructor() {
+    super();
+    this._navigator = null;
   }
-  return (
-    <LinearGradient colors={['#F7F7F7', '#D7D7D7']} style={styles.container}>
-      <Navigator
-        initialRoute={routes[0]}
-        initialRouteStack={routes}
-        renderScene={(route, navigator) => {
-          if (route.index === 0) {
-            return (
-              <View>
-                <AddContactButton
-                  onPress={() =>
-                    navigator.push({ title: 'Add Contact', index: 2 })}
+  componentDidMount() {
+    BackAndroid.addEventListener('hardwareBackPress', () => {
+      if (this._navigator && this._navigator.getCurrentRoutes().length > 1) {
+        this._navigator.pop();
+        return true;
+      }
+      return false;
+    });
+  }
+  render() {
+    const props = this.props;
+    const routes = [
+      { title: 'Contacts', index: 0 }
+    ];
+    if (!props.initialStoreLoaded) {
+      return (
+        <View style={styles.spinnerContainer}>
+          <ActivityIndicator size="large" />
+        </View>
+      );
+    }
+    return (
+      <LinearGradient colors={['#F7F7F7', '#D7D7D7']} style={styles.container}>
+        <Navigator
+          ref={(nav) => { this._navigator = nav; }}
+          initialRoute={routes[0]}
+          initialRouteStack={routes}
+          renderScene={(route, navigator) => {
+            if (route.index === 0) {
+              return (
+                <View>
+                  <AddContactButton
+                    onPress={() =>
+                      navigator.push({ title: 'Add Contact', index: 2 })}
+                  />
+                  <ContactList
+                    contacts={filterPrimaryContactsOnly(props.contacts)}
+                    onAddContactPress={() => navigator.push({ title: 'Add New Contact', index: 3 })}
+                    onNavigatePress={(title, contactId) =>
+                      navigator.push({ title, contactId, index: 1 })}
+                  />
+                </View>
+              );
+            } else if (route.index === 1) {
+              return (
+                <SingleContactView
+                  contactId={route.contactId}
+                  onBack={() => navigator.pop()}
+                  onRotationPress={(rotation) => navigator.push({ title: rotation.name, index: 4, rotation })}
+                />);
+            } else if (route.index === 2) {
+              return (
+                <ImportContactView
+                  addContact={props.actions.addContact}
+                  onBack={() => navigator.pop()}
+                />);
+            } else if (route.index === 3) {
+              return (
+                <NewContactView
+                  addContact={props.actions.addContact}
+                  onBack={() => navigator.pop()}
                 />
-                <ContactList
-                  contacts={filterPrimaryContactsOnly(props.contacts)}
-                  onAddContactPress={() => navigator.push({ title: 'Add New Contact', index: 3 })}
-                  onNavigatePress={(title, contactId) =>
-                    navigator.push({ title, contactId, index: 1 })}
+              );
+            } else if (route.index === 4) {
+              return (
+                <SingleRotationView
+                  onBack={() => navigator.pop()}
+                  rotation={route.rotation}
                 />
-              </View>
-            );
-          } else if (route.index === 1) {
-            return (
-              <SingleContactView
-                contactId={route.contactId}
-                onBack={() => navigator.pop()}
-                onRotationPress={(rotation) => navigator.push({ title: rotation.name, index: 4, rotation })}
-              />);
-          } else if (route.index === 2) {
-            return (
-              <ImportContactView
-                addContact={props.actions.addContact}
-                onBack={() => navigator.pop()}
-              />);
-          } else if (route.index === 3) {
-            return (
-              <NewContactView
-                addContact={props.actions.addContact}
-                onBack={() => navigator.pop()}
-              />
-            );
-          } else if (route.index === 4) {
-            return (
-              <SingleRotationView
-                onBack={() => navigator.pop()}
-                rotation={route.rotation}
-              />
-            );
-          }
-          return <View><Text>oops unexpected route</Text></View>;
-        }}
-        configureScene={() =>
-          Navigator.SceneConfigs.PushFromRight}
-      />
-    </LinearGradient>
-  );
-};
+              );
+            }
+            return <View><Text>oops unexpected route</Text></View>;
+          }}
+          configureScene={() =>
+            Navigator.SceneConfigs.PushFromRight}
+        />
+      </LinearGradient>
+    );
+  };
+}
 
 ContactsComponent.propTypes = {
   contacts: PropTypes.object.isRequired,
