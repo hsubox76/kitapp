@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { ScrollView, View, Text, Alert } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import _ from 'lodash';
@@ -20,8 +20,7 @@ function mapStateToProps(state, ownProps) {
 function mapDispatchToProps(dispatch) {
   return {
     updateContactMethod:
-      (contactId, contactMethod) => dispatch(Actions.updateContactMethod(contactId, contactMethod)),
-    deleteContact: (id) => dispatch(Actions.deleteContact(id))
+      (contactId, contactMethod) => dispatch(Actions.updateContactMethod(contactId, contactMethod))
   };
 }
 
@@ -38,23 +37,6 @@ function getDaysUntilNextBirthday(birthdate) {
 }
 
 class SingleContactView extends Component {
-  onDeletePress() {
-    const props = this.props;
-    Alert.alert(
-      'Delete Contact',
-      `Delete contact ${props.selectedContact.name}?`,
-      [
-        { text: 'Cancel', onPress: () => {} },
-        { text: 'OK', onPress: () => this.deleteContact() },
-      ]
-    );
-  }
-  deleteContact() {
-    this.props.deleteContact(this.props.contactId)
-      .then(() => {
-        this.props.onBack();
-      });
-  }
   render() {
     let contents = null;
     const contact = this.props.selectedContact;
@@ -69,7 +51,7 @@ class SingleContactView extends Component {
           <NavHeader
             title={contact.name}
             onBack={this.props.onBack}
-            onEdit={() => this.onDeletePress()}
+            onEdit={() => this.props.onEdit(contact.id)}
           />
           <View style={styles.birthdayBar}>
             <Text style={styles.birthdayBarText}>
@@ -103,7 +85,8 @@ class SingleContactView extends Component {
 SingleContactView.propTypes = {
   selectedContact: PropTypes.object,
   contactId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  onBack: PropTypes.func,
+  onBack: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
   events: PropTypes.array,
   rotations: PropTypes.object,
   updateContactMethod: PropTypes.func.isRequired,

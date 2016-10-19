@@ -141,6 +141,14 @@ export function resetToTestData() {
   };
 }
 
+export function updateContact(contactId, contactData) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    return firebaseApp.database().ref(`users/${user.uid}/contacts/${contactId}`)
+      .update(contactData);
+  };
+}
+
 export function addContact(contactData) {
   return (dispatch, getStore) => {
     const { user } = getStore();

@@ -24,7 +24,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-class EditRotationView extends Component {
+class SingleRotationEdit extends Component {
   constructor(props) {
     super(props);
     const method = props.contact.contactMethods[props.rotation.contactMethodId];
@@ -200,7 +200,7 @@ class EditRotationView extends Component {
   }
 }
 
-EditRotationView.propTypes = {
+SingleRotationEdit.propTypes = {
   rotation: PropTypes.object,
   contact: PropTypes.object,
   onBack: PropTypes.func.isRequired,
@@ -273,4 +273,4 @@ const styles = {
   }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditRotationView);
+export default connect(mapStateToProps, mapDispatchToProps)(SingleRotationEdit);

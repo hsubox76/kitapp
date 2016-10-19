@@ -7,10 +7,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import ContactList from '../components/ContactList';
 import AddContactButton from '../components/AddContactButton';
 import ImportContactView from '../components/ImportContactView/ImportContactView';
-import NewContactView from '../components/SingleContactView/NewContactView';
+import SingleContactEdit from '../components/SingleContactView/SingleContactEdit';
 import SingleContactView from '../components/SingleContactView/SingleContactView';
 import SingleRotationView from '../components/SingleRotationView/SingleRotationView';
-import EditRotationView from '../components/SingleRotationView/EditRotationView';
+import SingleRotationEdit from '../components/SingleRotationView/SingleRotationEdit';
 import { CONTACT_TYPE } from '../data/constants';
 
 import * as Actions from '../actions';
@@ -86,6 +86,8 @@ class ContactsComponent extends Component {
                 <SingleContactView
                   contactId={route.contactId}
                   onBack={() => navigator.pop()}
+                  onEdit={(contactId) =>
+                    navigator.push({ title: 'Edit Contact', index: 6, contactId })}
                   onRotationPress={(rotation) =>
                     navigator.push({ title: rotation.name, index: 4, rotationId: rotation.id })}
                 />);
@@ -97,8 +99,8 @@ class ContactsComponent extends Component {
                 />);
             } else if (route.index === 3) {
               return (
-                <NewContactView
-                  addContact={props.actions.addContact}
+                <SingleContactEdit
+                  onSaveContact={props.actions.addContact}
                   onBack={() => navigator.pop()}
                 />
               );
@@ -113,9 +115,19 @@ class ContactsComponent extends Component {
               );
             } else if (route.index === 5) {
               return (
-                <EditRotationView
+                <SingleRotationEdit
                   onBack={() => navigator.pop()}
                   rotationId={route.rotationId}
+                />
+              );
+            } else if (route.index === 6) {
+              return (
+                <SingleContactEdit
+                  onSaveContact={(contactData) =>
+                    props.actions.updateContact(route.contactId, contactData)}
+                  contactId={route.contactId}
+                  onBack={() => navigator.pop()}
+                  onBackAfterDelete={() => navigator.popN(2)}
                 />
               );
             }

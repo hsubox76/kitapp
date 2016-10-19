@@ -15,17 +15,23 @@ const NavHeader = (props) => {
       <View style={styles.contactName}>
         <Text style={[styles.nameText, { color }]}>{props.title}</Text>
       </View>
-      {props.onEdit ?
-      (
+      {props.onEdit &&
         <TouchableOpacity onPress={props.onEdit}>
+          <View style={styles.navButton}>
+            <Icon name="pencil-square-o" size={20} />
+          </View>
+        </TouchableOpacity>
+      }
+      {props.onDelete &&
+        <TouchableOpacity onPress={props.onDelete}>
           <View style={styles.navButton}>
             <Icon name="trash" size={20} />
           </View>
         </TouchableOpacity>
-      ) :
-      (
+      }
+      {!props.onEdit && !props.onDelete &&
         <View style={styles.navButton} />
-      )}
+      }
     </View>
   );
 };
@@ -33,6 +39,7 @@ const NavHeader = (props) => {
 NavHeader.propTypes = {
   onBack: PropTypes.func.isRequired,
   onEdit: PropTypes.func,
+  onDelete: PropTypes.func,
   title: PropTypes.string,
   color: PropTypes.string,
 };
