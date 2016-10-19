@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { View, Text, Navigator } from 'react-native';
+import { View, Text, Navigator, ActivityIndicator } from 'react-native';
 import _ from 'lodash';
 import LinearGradient from 'react-native-linear-gradient';
 import ContactList from '../components/ContactList';
@@ -21,7 +21,8 @@ function filterPrimaryContactsOnly(contacts) {
 function mapStateToProps(state) {
   return {
     contacts: state.contacts,
-    initialStoreLoaded: state.ui.initialStoreLoaded
+    initialStoreLoaded: state.ui.isDataLoaded
+      && _.every(state.ui.isDataLoaded, storeIsLoaded => storeIsLoaded),
   };
 }
 
@@ -35,6 +36,13 @@ const ContactsComponent = (props) => {
   const routes = [
     { title: 'Contacts', index: 0 }
   ];
+  if (!props.initialStoreLoaded) {
+    return (
+      <View style={styles.spinnerContainer}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
   return (
     <LinearGradient colors={['#F7F7F7', '#D7D7D7']} style={styles.container}>
       <Navigator
@@ -103,6 +111,11 @@ ContactsComponent.propTypes = {
 const styles = {
   container: {
     flex: 1,
+  },
+  spinnerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 };
 

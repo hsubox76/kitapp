@@ -1,11 +1,26 @@
 import { ACTIONS } from '../actions/types';
 
+export function isDataLoaded(state, action) {
+  switch (action.type) {
+    case ACTIONS.SET_CONTACTS:
+      return Object.assign({}, state, { contacts: true });
+    case ACTIONS.SET_ROTATIONS:
+      return Object.assign({}, state, { rotations: true });
+    case ACTIONS.SET_EVENTS:
+      return Object.assign({}, state, { events: true });
+    default:
+      return state;
+  }
+}
+
 export default function ui(state, action) {
   switch (action.type) {
-    case ACTIONS.SET_STORE:
+    case ACTIONS.SET_CONTACTS:
+    case ACTIONS.SET_ROTATIONS:
+    case ACTIONS.SET_EVENTS:
       return Object.assign({}, state, {
-        initialStoreLoaded: true,
-        hasUnsavedChanges: false
+        hasUnsavedChanges: false,
+        isDataLoaded: isDataLoaded(state.isDataLoaded, action)
       });
     case ACTIONS.UPDATE_CONTACT_METHOD:
       return Object.assign({}, state, { hasUnsavedChanges: true });

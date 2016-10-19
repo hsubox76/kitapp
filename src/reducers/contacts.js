@@ -28,7 +28,7 @@ export function contact(state = {}, action) {
 
 export default function contacts(state = {}, action) {
   switch (action.type) {
-    case ACTIONS.SET_STORE:
+    case ACTIONS.SET_CONTACTS:
       return action.payload.contacts;
     case ACTIONS.UPDATE_CONTACT_METHOD:
       return _.extend({}, state, { [action.payload.contactId]: contact(state[action.payload.contactId], action) });

@@ -1,6 +1,8 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { View, ActivityIndicator } from 'react-native';
+import _ from 'lodash';
 import LinearGradient from 'react-native-linear-gradient';
 import EventList from '../components/EventList';
 import Button from 'apsl-react-native-button';
@@ -11,7 +13,8 @@ function mapStateToProps(state) {
     rotations: state.rotations,
     contacts: state.contacts,
     events: state.events,
-    initialStoreLoaded: state.ui.initialStoreLoaded,
+    initialStoreLoaded: state.ui.isDataLoaded
+      && _.every(state.ui.isDataLoaded, storeIsLoaded => storeIsLoaded),
     user: state.user
   };
 }
@@ -32,6 +35,13 @@ class UpcomingComponent extends Component {
     }
   }
   render() {
+    if (!this.props.initialStoreLoaded) {
+      return (
+        <View style={styles.spinnerContainer}>
+          <ActivityIndicator size="large" />
+        </View>
+      );
+    }
     return (
       <LinearGradient colors={['#F7F7F7', '#D7D7D7']} style={styles.container}>
         <Button onPress={this.props.actions.resetToTestData}>
@@ -60,6 +70,11 @@ UpcomingComponent.propTypes = {
 const styles = {
   container: {
     flex: 1
+  },
+  spinnerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 };
 

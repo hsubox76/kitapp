@@ -10,10 +10,6 @@ import { getTimestampOfNextEvent } from '../utils/utils';
 
 // Action creators
 
-export function setModalVisibility(isVisible) {
-  return { type: ACTIONS.SET_MODAL_VISIBILITY, payload: { isVisible } };
-}
-
 export function setSelectedContact(contactId) {
   return { type: ACTIONS.SET_SELECTED_CONTACT, payload: { contactId } };
 }
@@ -24,7 +20,6 @@ export function updateContactMethod(contactId, contactMethod) {
     firebaseApp.database()
       .ref(`users/${user.uid}/contacts/${contactId}/contactMethods/${contactMethod.id}`)
       .set(contactMethod);
-    // dispatch({ type: ACTIONS.UPDATE_CONTACT_METHOD, payload: { contactId, contactMethod } });
   };
 }
 
@@ -69,24 +64,60 @@ export function logout() {
 
 export function fetchStoreFromStorage() {
   return (dispatch, getStore) => {
-    // Storage.getStoreFromStorage()
-    // .then(result => {
-    //   dispatch({ type: ACTIONS.SET_STORE, payload: result });
-    // })
-    // .catch((error) => console.warn(`fetchStoreFromStorage error: ${error}`));
     const { user } = getStore();
 
-    firebaseApp.database().ref(`users/${user.uid}`).on('value', (snapshot) => {
+    firebaseApp.database().ref(`users/${user.uid}/contacts`).on('value', (snapshot) => {
       const results = snapshot.val();
       if (results) {
         dispatch({
-          type: ACTIONS.SET_STORE,
+          type: ACTIONS.SET_CONTACTS,
           payload: {
-            contacts: results.contacts,
-            rotations: results.rotations
+            contacts: results
           }
         });
       }
+    });
+
+    firebaseApp.database().ref(`users/${user.uid}/rotations`).on('value', (snapshot) => {
+      const results = snapshot.val();
+      if (results) {
+        dispatch({
+          type: ACTIONS.SET_ROTATIONS,
+          payload: {
+            rotations: results
+          }
+        });
+      }
+    });
+
+    firebaseApp.database().ref(`users/${user.uid}/events`).on('value', (snapshot) => {
+      const results = snapshot.val();
+      if (results) {
+        dispatch({
+          type: ACTIONS.SET_EVENTS,
+          payload: {
+            events: results
+          }
+        });
+      }
+    });
+  };
+}
+
+export function writeStoreToStorage(customStore) {
+  return (dispatch, getStore) => {
+    const store = customStore || getStore();
+
+    Storage.writeStoreToStorage(store)
+    .then(() => {
+      // probably set some state to indicate write succeeded
+    })
+    .catch((error) => console.warn(error));
+
+    firebaseApp.database().ref(`users/${store.user.uid}`).update({
+      contacts: store.contacts,
+      rotations: store.rotations,
+      events: store.events
     });
   };
 }
@@ -95,7 +126,7 @@ export function resetToTestData() {
   return (dispatch, getStore) => {
     const newStore = Object.assign({}, getStore(), {
       contacts: testContacts,
-      rotations: testRotations
+      rotations: testRotations,
     });
     dispatch({
       type: ACTIONS.SET_STORE,
@@ -131,26 +162,9 @@ export function deleteContactMethod(contactId, methodId) {
   };
 }
 
-export function writeStoreToStorage(customStore) {
-  return (dispatch, getStore) => {
-    const store = customStore || getStore();
-
-    Storage.writeStoreToStorage(store)
-    .then(() => {
-      // probably set some state to indicate write succeeded
-    })
-    .catch((error) => console.warn(error));
-
-    firebaseApp.database().ref(`users/${store.user.uid}`).update({
-      contacts: store.contacts,
-      rotations: store.rotations
-    });
-  };
-}
-
 export function updateEvents() {
   return (dispatch, getStore) => {
-    const { rotations, contacts } = getStore();
+    const { rotations, contacts, user } = getStore();
     const events = _(rotations)
       .map((rotation) => {
         const contact = _.find(contacts,
@@ -162,16 +176,17 @@ export function updateEvents() {
           contactName: contact.name,
           contactMethod,
           name: rotation.name,
-          timestamp: getTimestampOfNextEvent(rotation)
+          timestamp: getTimestampOfNextEvent(rotation).valueOf()
         };
       })
       // Filter out "lapping" events that are a year or more from now that would
       // be confusing since we don't show year in this UI
       // Maybe it's better to show them but format them differently (add the year)
-      .filter(event => event.timestamp.isBefore(moment().add(11, 'months')))
+      .filter(event => event.timestamp < moment().add(11, 'months').valueOf())
       .sortBy(event => event.timestamp)
       .value();
-    dispatch({ type: ACTIONS.UPDATE_EVENTS, events });
+    return firebaseApp.database().ref(`users/${user.uid}/events`)
+      .set(events);
   };
 }
 
