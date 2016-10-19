@@ -127,10 +127,15 @@ export function resetToTestData() {
     const newStore = Object.assign({}, getStore(), {
       contacts: testContacts,
       rotations: testRotations,
+      events: {}
     });
     dispatch({
-      type: ACTIONS.SET_STORE,
-      payload: newStore
+      type: ACTIONS.SET_CONTACTS,
+      payload: testContacts
+    });
+    dispatch({
+      type: ACTIONS.SET_ROTATIONS,
+      payload: testRotations
     });
     dispatch(writeStoreToStorage(newStore));
   };
@@ -139,11 +144,34 @@ export function resetToTestData() {
 export function addContact(contactData) {
   return (dispatch, getStore) => {
     const { user } = getStore();
+    let contactDataToAdd = {};
     const newContactKey = firebaseApp.database().ref(`users/${user.uid}/contacts`).push().key;
-    return firebaseApp.database().ref(`users/${user.uid}/contacts/${newContactKey}`)
+    if (_.isArray(contactData.contactMethods)) {
+      contactDataToAdd = _.extend({}, contactData, {
+        id: newContactKey
+      });
+      contactDataToAdd = _.omit(contactDataToAdd, 'contactMethods');
+    } else {
+      contactDataToAdd = _.extend({}, contactData, {
+        id: newContactKey
+      });
+    }
+    const db = firebaseApp.database();
+    return db.ref(`users/${user.uid}/contacts/${newContactKey}`)
       .set(_.extend({}, contactData, {
         id: newContactKey
-      }));
+      }))
+      .then(() => {
+        const newMethods = _(contactData.contactMethods)
+          .map((contactMethod) => {
+            const newMethodId = db
+              .ref(`users/${user.uid}/contacts/${newContactKey}/contactMethods`).push().key;
+            return _.extend({}, contactMethod, { id: newMethodId });
+          })
+          .keyBy('id')
+          .value();
+        return db.ref(`users/${user.uid}/contacts/${newContactKey}/contactMethods`).set(newMethods);
+      });
   };
 }
 
@@ -173,6 +201,7 @@ export function updateEvents() {
             cMethod => cMethod.id === rotation.contactMethodId);
         return {
           contactId: rotation.contactId,
+          rotationId: rotation.id,
           contactName: contact.name,
           contactMethod,
           name: rotation.name,

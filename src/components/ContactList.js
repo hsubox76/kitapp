@@ -26,7 +26,8 @@ class ContactList extends Component {
         style={styles.listContainer}
         dataSource={this.state.dataSource}
         enableEmptySections
-        renderHeader={() => (<ContactListHeader onAddContactPress={this.props.onAddContactPress} />)}
+        renderHeader={() =>
+          (<ContactListHeader onAddContactPress={this.props.onAddContactPress} />)}
         renderRow={(contact) => (
           <ContactBox
             key={contact.id}

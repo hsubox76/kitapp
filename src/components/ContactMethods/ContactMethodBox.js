@@ -66,7 +66,7 @@ class ContactMethodBox extends Component {
 }
 
 ContactMethodBox.propTypes = {
-  contactMethod: PropTypes.object,
+  contactMethod: PropTypes.object.isRequired,
   isEditing: PropTypes.bool,
   actions: PropTypes.objectOf(PropTypes.func),
   contactId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
