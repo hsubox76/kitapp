@@ -10,6 +10,7 @@ import ImportContactView from '../components/ImportContactView/ImportContactView
 import NewContactView from '../components/SingleContactView/NewContactView';
 import SingleContactView from '../components/SingleContactView/SingleContactView';
 import SingleRotationView from '../components/SingleRotationView/SingleRotationView';
+import EditRotationView from '../components/SingleRotationView/EditRotationView';
 import { CONTACT_TYPE } from '../data/constants';
 
 import * as Actions from '../actions';
@@ -85,7 +86,8 @@ class ContactsComponent extends Component {
                 <SingleContactView
                   contactId={route.contactId}
                   onBack={() => navigator.pop()}
-                  onRotationPress={(rotation) => navigator.push({ title: rotation.name, index: 4, rotation })}
+                  onRotationPress={(rotation) =>
+                    navigator.push({ title: rotation.name, index: 4, rotationId: rotation.id })}
                 />);
             } else if (route.index === 2) {
               return (
@@ -104,7 +106,16 @@ class ContactsComponent extends Component {
               return (
                 <SingleRotationView
                   onBack={() => navigator.pop()}
-                  rotation={route.rotation}
+                  onEdit={(rotationId) =>
+                    navigator.push({ title: 'edit schedule', index: 5, rotationId })}
+                  rotationId={route.rotationId}
+                />
+              );
+            } else if (route.index === 5) {
+              return (
+                <EditRotationView
+                  onBack={() => navigator.pop()}
+                  rotationId={route.rotationId}
                 />
               );
             }

@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 // import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS } from '../data/constants';
 
 const ContactListHeader = (props) => (
   <View colors={['#DBDDDE', '#898C90']} style={styles.container}>
@@ -18,7 +19,7 @@ ContactListHeader.propTypes = {
   onAddContactPress: PropTypes.func,
 };
 
-const mainColor = '#FF5E3A';
+const mainColor = COLORS.CONTACTS.PRIMARY;
 
 const styles = {
   container: {

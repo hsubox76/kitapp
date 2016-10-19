@@ -1,10 +1,8 @@
 import React, { PropTypes, Component } from 'react';
-import { TouchableOpacity, View, Dimensions, Text } from 'react-native';
+import { View } from 'react-native';
 import _ from 'lodash';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import ContactMethodBox from './ContactMethodBox';
-
-const { width } = Dimensions.get('window');
+import AddItemButton from '../SharedComponents/AddItemButton';
 
 class ContactMethods extends Component {
   constructor() {
@@ -51,10 +49,10 @@ class ContactMethods extends Component {
             contactMethod={{ id: contactMethods.length }}
           />
           :
-          <TouchableOpacity style={styles.addMethodButton} onPress={() => this.onAddNewMethod()}>
-            <Icon name="plus" size={20} style={styles.addMethodButtonText} />
-            <Text>add contact method</Text>
-          </TouchableOpacity>
+          <AddItemButton
+            onPress={() => this.onAddNewMethod()}
+            text="add contact method"
+          />
         }
       </View>
     );
@@ -64,22 +62,6 @@ class ContactMethods extends Component {
 ContactMethods.propTypes = {
   contact: PropTypes.object.isRequired,
   onContactMethodUpdate: PropTypes.func.isRequired,
-};
-
-const styles = {
-  addMethodButton: {
-    padding: 7,
-    width: width - 10,
-    marginTop: 10,
-    marginLeft: 5,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  addMethodButtonText: {
-    color: '#999'
-  }
 };
 
 export default ContactMethods;

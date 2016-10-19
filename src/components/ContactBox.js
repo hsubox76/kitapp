@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
+import { COLORS } from '../data/constants';
 
 import * as Actions from '../actions';
 
@@ -23,7 +24,7 @@ function mapDispatchToActions(dispatch) {
 }
 
 const ContactBox = (props) => {
-  const colors = colorMap.meet;
+  const colors = [COLORS.CONTACTS.PRIMARY, COLORS.CONTACTS.SECONDARY];
   if (props.contact) {
     return (
       <TouchableOpacity
@@ -50,11 +51,6 @@ ContactBox.propTypes = {
   actions: PropTypes.object,
   modalVisible: PropTypes.bool,
   onPress: PropTypes.func,
-};
-
-const colorMap = {
-  meet: ['#FF5E3A', '#FF2A68'],
-  call: ['#74DF5F', '#09B014']
 };
 
 const styles = {

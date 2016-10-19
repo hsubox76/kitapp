@@ -175,6 +175,13 @@ export function addContact(contactData) {
   };
 }
 
+export function updateRotation(rotation) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    return firebaseApp.database().ref(`users/${user.uid}/rotations/${rotation.id}`).set(rotation);
+  };
+}
+
 export function deleteContact(id) {
   return (dispatch, getStore) => {
     const { user } = getStore();

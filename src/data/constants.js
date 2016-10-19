@@ -37,3 +37,26 @@ export const METHOD_TYPE_ICONS = {
 // };
 
 export const DATE_FORMAT = 'MM-DD-YYYY HH:mm';
+
+export const COLORS = {
+  CONTACTS: {
+    PRIMARY: '#FF5E3A',
+    SECONDARY: '#FF2A68'
+  },
+  ROTATIONS: {
+    PRIMARY: '#FF9500',
+    SECONDARY: '#FF5E3A'
+  }
+};
+
+export const EVENT_STATUS = {
+  DONE: 'done',
+  MISSED: 'missed',
+};
+
+export const TIME_UNITS = [
+  'days',
+  'weeks',
+  'months',
+  'years'
+];
