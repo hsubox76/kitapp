@@ -61,7 +61,12 @@ class SingleContactView extends Component {
             </Text>
           </View>
           <ScrollView style={{ flex: 1 }}>
-            <ContactRotations onRotationPress={this.props.onRotationPress} contact={contact} rotations={rotations} />
+            <ContactRotations
+              onRotationPress={this.props.onRotationPress}
+              onNewRotationPress={this.props.onNewRotationPress}
+              contact={contact}
+              rotations={rotations}
+            />
             <ContactMethods
               contact={contact}
               onContactMethodUpdate={
@@ -92,6 +97,7 @@ SingleContactView.propTypes = {
   updateContactMethod: PropTypes.func.isRequired,
   deleteContact: PropTypes.func,
   onRotationPress: PropTypes.func.isRequired,
+  onNewRotationPress: PropTypes.func.isRequired,
 };
 
 const styles = {

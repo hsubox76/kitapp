@@ -88,6 +88,8 @@ class ContactsComponent extends Component {
                   onBack={() => navigator.pop()}
                   onEdit={(contactId) =>
                     navigator.push({ title: 'Edit Contact', index: 6, contactId })}
+                  onNewRotationPress={() =>
+                    navigator.push({ title: 'Add Schedule', index: 7, contactId: route.contactId })}
                   onRotationPress={(rotation) =>
                     navigator.push({ title: rotation.name, index: 4, rotationId: rotation.id })}
                 />);
@@ -114,10 +116,12 @@ class ContactsComponent extends Component {
                 />
               );
             } else if (route.index === 5) {
+              // edit rotation
               return (
                 <SingleRotationEdit
                   onBack={() => navigator.pop()}
                   rotationId={route.rotationId}
+                  onSaveRotation={(rotation) => props.actions.updateRotation(rotation)}
                 />
               );
             } else if (route.index === 6) {
@@ -128,6 +132,15 @@ class ContactsComponent extends Component {
                   contactId={route.contactId}
                   onBack={() => navigator.pop()}
                   onBackAfterDelete={() => navigator.popN(2)}
+                />
+              );
+            } else if (route.index === 7) {
+              // add new rotation
+              return (
+                <SingleRotationEdit
+                  contactId={route.contactId}
+                  onBack={() => navigator.pop()}
+                  onSaveRotation={(rotation) => props.actions.addRotation(rotation)}
                 />
               );
             }

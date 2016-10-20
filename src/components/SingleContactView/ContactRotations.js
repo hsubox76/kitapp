@@ -45,6 +45,7 @@ const ContactRotations = (props) => {
     <View>
       {rotationViews}
       <AddItemButton
+        onPress={props.onNewRotationPress}
         text="add KIT schedule"
         color={COLORS.ROTATIONS.PRIMARY}
       />
@@ -56,6 +57,7 @@ ContactRotations.propTypes = {
   contact: PropTypes.object.isRequired,
   rotations: PropTypes.array.isRequired,
   onRotationPress: PropTypes.func.isRequired,
+  onNewRotationPress: PropTypes.func.isRequired,
 };
 
 const styles = {

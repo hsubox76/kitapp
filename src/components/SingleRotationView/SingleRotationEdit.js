@@ -3,39 +3,49 @@ import { View, Text, TextInput, Dimensions, Picker,
   TouchableOpacity, DatePickerAndroid, TimePickerAndroid } from 'react-native';
 import { connect } from 'react-redux';
 import _ from 'lodash';
+import moment from 'moment';
 import { getTimestampOfNextEvent } from '../../utils/utils';
 import { COLORS, TIME_UNITS, DATE_FORMAT } from '../../data/constants';
 import NavHeader from '../SharedComponents/NavHeader';
-import * as Actions from '../../actions';
 
 const { width } = Dimensions.get('window');
 
 function mapStateToProps(state, ownProps) {
-  const rotation = _.find(state.rotations, { id: ownProps.rotationId });
+  if (ownProps.rotationId) {
+    const rotation = _.find(state.rotations, { id: ownProps.rotationId });
+    return {
+      rotation,
+      contact: _.find(state.contacts, { id: rotation.contactId })
+    };
+  }
   return {
-    rotation,
-    contact: _.find(state.contacts, { id: rotation.contactId })
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    updateRotation: (rotation) => dispatch(Actions.updateRotation(rotation))
+    contact: _.find(state.contacts, { id: ownProps.contactId })
   };
 }
 
 class SingleRotationEdit extends Component {
   constructor(props) {
     super(props);
-    const method = props.contact.contactMethods[props.rotation.contactMethodId];
-    this.state = {
-      name: props.rotation.name,
-      methodId: method.id,
-      frequencyNumber: props.rotation.every[0].toString(),
-      frequencyUnit: props.rotation.every[1],
-      nextMoment: getTimestampOfNextEvent(props.rotation),
-      dateTouched: false
-    };
+    if (props.rotationId) {
+      const method = props.contact.contactMethods[props.rotation.contactMethodId];
+      this.state = {
+        name: props.rotation.name,
+        methodId: method.id,
+        frequencyNumber: props.rotation.every[0].toString(),
+        frequencyUnit: props.rotation.every[1],
+        nextMoment: getTimestampOfNextEvent(props.rotation),
+        dateTouched: false
+      };
+    } else {
+      this.state = {
+        name: '',
+        methodId: _.find(props.contact.contactMethods, () => true).id,
+        frequencyNumber: '1',
+        frequencyUnit: 'weeks',
+        nextMoment: moment(),
+        dateTouched: false
+      };
+    }
   }
   onChangeName(text) {
     this.setState({
@@ -75,15 +85,16 @@ class SingleRotationEdit extends Component {
   }
   formatAndUpdateRotation() {
     const rotation = {
-      id: this.props.rotation.id,
+      id: _.get(this.props, 'rotation.id') || '',
       name: this.state.name,
-      contactId: this.props.contact.id,
+      contactId: _.get(this.props, 'contact.id') || this.props.contactId,
       contactMethodId: this.state.methodId,
       every: [parseInt(this.state.frequencyNumber, 10), this.state.frequencyUnit],
       starting: this.state.dateTouched
-        ? this.state.nextMoment.format(DATE_FORMAT) : this.props.rotation.starting
+        ? this.state.nextMoment.format(DATE_FORMAT)
+        : (_.get(this.props, 'rotation.starting') || moment().format(DATE_FORMAT))
     };
-    this.props.updateRotation(rotation)
+    this.props.onSaveRotation(rotation)
       .then(() => this.props.onBack())
       .catch(error => console.warn('Error updating rotation:', error));
   }
@@ -92,7 +103,7 @@ class SingleRotationEdit extends Component {
     return (
       <View style={styles.container}>
         <NavHeader
-          title="Edit Schedule"
+          title={this.props.rotationId ? 'Edit Schedule' : 'New Schedule'}
           onBack={this.props.onBack}
           color={COLORS.ROTATIONS.PRIMARY}
         />
@@ -201,10 +212,12 @@ class SingleRotationEdit extends Component {
 }
 
 SingleRotationEdit.propTypes = {
+  rotationId: PropTypes.string,
+  contactId: PropTypes.string,
   rotation: PropTypes.object,
   contact: PropTypes.object,
   onBack: PropTypes.func.isRequired,
-  updateRotation: PropTypes.func.isRequired,
+  onSaveRotation: PropTypes.func.isRequired,
 };
 
 const styles = {
@@ -273,4 +286,4 @@ const styles = {
   }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SingleRotationEdit);
+export default connect(mapStateToProps)(SingleRotationEdit);

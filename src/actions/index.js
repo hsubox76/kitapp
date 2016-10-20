@@ -183,6 +183,17 @@ export function addContact(contactData) {
   };
 }
 
+export function addRotation(rotation) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    const newRotationKey = firebaseApp.database().ref(`users/${user.uid}/rotations`).push().key;
+    return firebaseApp.database().ref(`users/${user.uid}/rotations/${newRotationKey}`)
+      .set(_.extend({}, rotation, {
+        id: newRotationKey
+      }));
+  };
+}
+
 export function updateRotation(rotation) {
   return (dispatch, getStore) => {
     const { user } = getStore();
