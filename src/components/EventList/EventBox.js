@@ -24,26 +24,51 @@ class EventBox extends Component {
   }
   render() {
     const props = this.props;
+    let type;
+    let contentColor;
+    if (props.event.timestamp > moment()) {
+      if (props.event.timestamp < moment().add(1, 'weeks')) {
+        type = 'soon';
+        contentColor = 'white';
+      } else {
+        type = 'later';
+        contentColor = COLORS.EVENTS.SECONDARY;
+      }
+    } else {
+      type = 'missed';
+      contentColor = COLORS.ROTATIONS.PRIMARY;
+    }
+    const gradientColors = type === 'soon'
+      ? [COLORS.EVENTS.PRIMARY, COLORS.EVENTS.SECONDARY] : ['#fff', '#fff'];
     return (
-      <LinearGradient colors={[COLORS.EVENTS.PRIMARY, COLORS.EVENTS.SECONDARY]} style={styles.container}>
-        <TouchableOpacity style={styles.container} onPress={() => this.props.onPress(this.props.event)}>
+      <LinearGradient colors={gradientColors} style={{ flex: 1 }}>
+        <TouchableOpacity
+          style={[styles.container.all, styles.container[type], { borderColor: contentColor }]}
+          onPress={() => this.props.onPress(this.props.event)}
+        >
           <View style={styles.date}>
             <View style={styles.month}>
-              <Text style={styles.monthText}>
+              <Text style={[styles.monthText, { color: contentColor }]}>
                 {moment(props.event.timestamp).format('MMM').toUpperCase()}
               </Text>
             </View>
-            <View style={styles.day}>
-              <Text style={styles.dayText}>{moment(props.event.timestamp).format('D')}</Text>
+            <View style={[styles.day.all, { borderColor: contentColor }]}>
+              <Text style={{ color: contentColor }}>
+                {moment(props.event.timestamp).format('D')}
+              </Text>
             </View>
           </View>
           <View style={styles.eventName}>
-            <Text style={styles.eventNameText} numberOfLines={2}>
+            <Text style={{ color: contentColor }} numberOfLines={2}>
               {props.event.name} ({props.event.contactName})
             </Text>
           </View>
           <View style={styles.icon}>
-            <Icon name={METHOD_TYPE_ICONS[props.event.contactMethod.type]} size={25} color="white" />
+            <Icon
+              name={METHOD_TYPE_ICONS[props.event.contactMethod.type]}
+              size={25}
+              color={contentColor}
+            />
           </View>
         </TouchableOpacity>
       </LinearGradient>
@@ -58,9 +83,20 @@ EventBox.propTypes = {
 
 const styles = {
   container: {
-    flex: 1,
-    height: 50,
-    flexDirection: 'row'
+    all: {
+      flex: 1,
+      height: 60,
+      flexDirection: 'row'
+    },
+    soon: {
+      // placeholder
+    },
+    later: {
+      borderWidth: 2
+    },
+    missed: {
+      borderWidth: 3
+    }
   },
   date: {
     width: 50,
@@ -70,29 +106,23 @@ const styles = {
     marginTop: 3
   },
   day: {
-    borderWidth: 1,
-    borderColor: 'white',
-    height: 26,
-    width: 26,
-    borderRadius: 13,
-    alignItems: 'center',
-    justifyContent: 'center'
+    all: {
+      borderWidth: 1,
+      height: 26,
+      width: 26,
+      borderRadius: 13,
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
   },
   monthText: {
-    color: 'white',
     fontSize: 10,
     fontWeight: 'bold'
-  },
-  dayText: {
-    color: 'white'
   },
   eventName: {
     flex: 1,
     marginLeft: 10,
     justifyContent: 'center'
-  },
-  eventNameText: {
-    color: 'white'
   },
   icon: {
     width: 50,

@@ -40,6 +40,7 @@ EventList.propTypes = {
 
 const styles = {
   listContainer: {
+    flex: 1,
     width: width - 10,
     margin: 5
   },

@@ -60,6 +60,7 @@ export const EVENT_STATUS = {
 };
 
 export const TIME_UNITS = [
+  'minutes',
   'days',
   'weeks',
   'months',

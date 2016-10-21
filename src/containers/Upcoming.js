@@ -70,12 +70,10 @@ class UpcomingComponent extends Component {
           renderScene={(route, navigator) => {
             if (route.index === 0) {
               return (
-                <View>
-                  <EventList
-                    events={this.props.events}
-                    onEventPress={(event) => navigator.push({ title: 'event', index: 1, event })}
-                  />
-                </View>
+                <EventList
+                  events={this.props.events}
+                  onEventPress={(event) => navigator.push({ title: 'event', index: 1, event })}
+                />
               );
             } else if (route.index === 1) {
               return (
