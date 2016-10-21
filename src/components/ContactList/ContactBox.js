@@ -1,13 +1,12 @@
-
 import React, { PropTypes } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
-import { COLORS } from '../data/constants';
+import { COLORS } from '../../data/constants';
 
-import * as Actions from '../actions';
+import * as Actions from '../../actions';
 
 function mapStateToProps(state, ownProps) {
   const selectedContact = _.find(state.contacts, { id: ownProps.contactId });

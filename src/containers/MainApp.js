@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { View } from 'react-native';
 import TabView from 'react-native-scrollable-tab-view';
 
 import Upcoming from './Upcoming';
 import Contacts from './Contacts';
+import Settings from './Settings';
 import TabBar from './TabBar';
 import * as Actions from '../actions';
 
@@ -32,10 +32,10 @@ class MainApp extends Component {
   }
   render() {
     return (
-      <TabView initialPage={1} renderTabBar={() => <TabBar />}>
+      <TabView initialPage={0} renderTabBar={() => <TabBar />}>
         <Upcoming tabLabel="clock" />
         <Contacts tabLabel="torsos" />
-        <View tabLabel="widget" />
+        <Settings tabLabel="widget" />
       </TabView>
     );
   }

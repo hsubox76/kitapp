@@ -3,7 +3,7 @@ import { TouchableOpacity, View, Text, Linking } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { METHOD_TYPE, METHOD_TYPE_ICONS } from '../data/constants';
+import { METHOD_TYPE, METHOD_TYPE_ICONS, COLORS } from '../../data/constants';
 
 
 class EventBox extends Component {
@@ -25,8 +25,8 @@ class EventBox extends Component {
   render() {
     const props = this.props;
     return (
-      <LinearGradient colors={colorMap.call} style={styles.container}>
-        <TouchableOpacity style={styles.container} onPress={() => this.onPress()}>
+      <LinearGradient colors={[COLORS.EVENTS.PRIMARY, COLORS.EVENTS.SECONDARY]} style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={() => this.props.onPress(this.props.event)}>
           <View style={styles.date}>
             <View style={styles.month}>
               <Text style={styles.monthText}>
@@ -53,11 +53,7 @@ class EventBox extends Component {
 
 EventBox.propTypes = {
   event: PropTypes.object,
-};
-
-const colorMap = {
-  meet: ['#FF5E3A', '#FF2A68'],
-  call: ['#74DF5F', '#09B014']
+  onPress: PropTypes.func,
 };
 
 const styles = {

@@ -6,7 +6,8 @@ import _ from 'lodash';
 import moment from 'moment';
 import { contacts as testContacts } from '../data/contacts';
 import { rotations as testRotations } from '../data/rotations';
-import { getTimestampOfNextEvent } from '../utils/utils';
+import { getTimestampsUntil } from '../utils/utils';
+import { EVENT_STATUS } from '../data/constants';
 
 // Action creators
 
@@ -216,32 +217,32 @@ export function deleteContactMethod(contactId, methodId) {
   };
 }
 
-export function updateEvents() {
+// generate all events from scratch based on rotations?
+export function updateAllEvents() {
   return (dispatch, getStore) => {
-    const { rotations, contacts, user } = getStore();
-    const events = _(rotations)
-      .map((rotation) => {
-        const contact = _.find(contacts,
-          (con) => con.id === rotation.contactId);
-        const contactMethod = _.find(contact.contactMethods,
-            cMethod => cMethod.id === rotation.contactMethodId);
-        return {
-          contactId: rotation.contactId,
-          rotationId: rotation.id,
-          contactName: contact.name,
-          contactMethod,
-          name: rotation.name,
-          timestamp: getTimestampOfNextEvent(rotation).valueOf()
-        };
-      })
-      // Filter out "lapping" events that are a year or more from now that would
-      // be confusing since we don't show year in this UI
-      // Maybe it's better to show them but format them differently (add the year)
-      .filter(event => event.timestamp < moment().add(11, 'months').valueOf())
-      .sortBy(event => event.timestamp)
-      .value();
-    return firebaseApp.database().ref(`users/${user.uid}/events`)
-      .set(events);
+    const { rotations, user } = getStore();
+    const eventSets = _(rotations).map(rotation => {
+      const timestamps = getTimestampsUntil(rotation, moment().add(1, 'month'));
+      const existingOriginalTimestamps = _.map(rotation.events, event => event.timestampOriginal);
+      // console.warn('eot', existingOriginalTimestamps);
+      const filteredTimestamps =
+        _.filter(timestamps, timestamp => !_.includes(existingOriginalTimestamps, timestamp));
+      // console.warn('ft', filteredTimestamps);
+      return _.map(filteredTimestamps, timestamp => ({
+        rotationId: rotation.id,
+        status: EVENT_STATUS.NOT_DONE,
+        timestampOriginal: timestamp,
+        timestamp
+      }));
+    })
+    .filter(eventSet => eventSet.length > 0)
+    .value();
+    if (eventSets.length > 0) {
+      const updateData = _.keyBy(eventSets, item => `${item[0].rotationId}/events`);
+      console.warn('updateData', updateData);
+      return firebaseApp.database().ref(`users/${user.uid}/rotations`)
+        .update(updateData);
+    }
   };
 }
 

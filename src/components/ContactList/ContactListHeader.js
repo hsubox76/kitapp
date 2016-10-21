@@ -1,11 +1,10 @@
 import React, { PropTypes } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-// import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { COLORS } from '../data/constants';
+import { COLORS } from '../../data/constants';
 
 const ContactListHeader = (props) => (
-  <View colors={['#DBDDDE', '#898C90']} style={styles.container}>
+  <View style={styles.container}>
     <View style={styles.titleContainer}>
       <Text style={styles.titleText}>Contacts</Text>
     </View>

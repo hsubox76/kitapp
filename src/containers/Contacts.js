@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { View, Text, Navigator, ActivityIndicator, BackAndroid } from 'react-native';
 import _ from 'lodash';
 import LinearGradient from 'react-native-linear-gradient';
-import ContactList from '../components/ContactList';
+import ContactList from '../components/ContactList/ContactList';
 import AddContactButton from '../components/AddContactButton';
 import ImportContactView from '../components/ImportContactView/ImportContactView';
 import SingleContactEdit from '../components/SingleContactView/SingleContactEdit';
@@ -151,7 +151,7 @@ class ContactsComponent extends Component {
         />
       </LinearGradient>
     );
-  };
+  }
 }
 
 ContactsComponent.propTypes = {

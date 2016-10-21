@@ -46,12 +46,17 @@ export const COLORS = {
   ROTATIONS: {
     PRIMARY: '#FF9500',
     SECONDARY: '#FF5E3A'
+  },
+  EVENTS: {
+    PRIMARY: '#74DF5F',
+    SECONDARY: '#09B014'
   }
 };
 
 export const EVENT_STATUS = {
   DONE: 'done',
   MISSED: 'missed',
+  NOT_DONE: 'not done'
 };
 
 export const TIME_UNITS = [

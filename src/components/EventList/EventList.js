@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { View, ListView, Dimensions } from 'react-native';
 import EventBox from './EventBox';
+import EventListHeader from './EventListHeader';
 
 const { width } = Dimensions.get('window');
 
@@ -23,7 +24,9 @@ class EventList extends Component {
         style={styles.listContainer}
         dataSource={this.state.dataSource}
         enableEmptySections
-        renderRow={(event) => <EventBox key={event.id} event={event} />}
+        renderHeader={() =>
+          (<EventListHeader />)}
+        renderRow={(event) => <EventBox key={event.id} event={event} onPress={this.props.onEventPress} />}
         renderSeparator={(sectionID, rowID) => <View key={rowID} style={styles.separator} />}
       />
     );
@@ -31,7 +34,8 @@ class EventList extends Component {
 }
 
 EventList.propTypes = {
-  events: PropTypes.array.isRequired
+  events: PropTypes.array.isRequired,
+  onEventPress: PropTypes.func,
 };
 
 const styles = {
