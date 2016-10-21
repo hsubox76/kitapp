@@ -9,19 +9,17 @@ import { rotations as testRotations } from '../data/rotations';
 import { getTimestampsUntil } from '../utils/utils';
 import { EVENT_STATUS } from '../data/constants';
 
+
+function updateTimestamp(userId, type) {
+  firebaseApp.database()
+    .ref(`users/${userId}/lastUpdated/${type}`)
+    .set(moment().valueOf());
+}
+
 // Action creators
 
 export function setSelectedContact(contactId) {
   return { type: ACTIONS.SET_SELECTED_CONTACT, payload: { contactId } };
-}
-
-export function updateContactMethod(contactId, contactMethod) {
-  return (dispatch, getStore) => {
-    const { user } = getStore();
-    firebaseApp.database()
-      .ref(`users/${user.uid}/contacts/${contactId}/contactMethods/${contactMethod.id}`)
-      .set(contactMethod);
-  };
 }
 
 export function setUser(user) {
@@ -80,26 +78,28 @@ export function fetchStoreFromStorage() {
     });
 
     firebaseApp.database().ref(`users/${user.uid}/rotations`).on('value', (snapshot) => {
-      const results = snapshot.val();
-      if (results) {
+      const rotations = snapshot.val();
+      if (rotations) {
         dispatch({
           type: ACTIONS.SET_ROTATIONS,
-          payload: {
-            rotations: results
-          }
+          payload: { rotations }
         });
       }
     });
 
-    firebaseApp.database().ref(`users/${user.uid}/events`).on('value', (snapshot) => {
+    firebaseApp.database().ref(`users/${user.uid}/lastUpdated`).on('value', (snapshot) => {
       const results = snapshot.val();
       if (results) {
         dispatch({
-          type: ACTIONS.SET_EVENTS,
+          type: ACTIONS.SET_LAST_UPDATED,
           payload: {
-            events: results
+            lastUpdated: results
           }
         });
+        // if rotations have been updated more recently than events have been calculated
+        if (results.rotations && (!results.events || results.rotations > results.events)) {
+          dispatch(updateAllEvents()).then(() => updateTimestamp(user.uid, 'events'));
+        }
       }
     });
   };
@@ -142,14 +142,6 @@ export function resetToTestData() {
   };
 }
 
-export function updateContact(contactId, contactData) {
-  return (dispatch, getStore) => {
-    const { user } = getStore();
-    return firebaseApp.database().ref(`users/${user.uid}/contacts/${contactId}`)
-      .update(contactData);
-  };
-}
-
 export function addContact(contactData) {
   return (dispatch, getStore) => {
     const { user } = getStore();
@@ -179,8 +171,48 @@ export function addContact(contactData) {
           })
           .keyBy('id')
           .value();
-        return db.ref(`users/${user.uid}/contacts/${newContactKey}/contactMethods`).set(newMethods);
+        return db.ref(`users/${user.uid}/contacts/${newContactKey}/contactMethods`)
+          .set(newMethods)
+          .then(() => updateTimestamp(user.uid, 'contacts'));
       });
+  };
+}
+
+export function updateContact(contactId, contactData) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    return firebaseApp.database().ref(`users/${user.uid}/contacts/${contactId}`)
+      .update(contactData)
+      .then(() => updateTimestamp(user.uid, 'contacts'));
+  };
+}
+
+export function deleteContact(id) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    return firebaseApp.database().ref(`users/${user.uid}/contacts/${id}`)
+      .remove()
+      .then(() => updateTimestamp(user.uid, 'contacts'));
+  };
+}
+
+export function updateContactMethod(contactId, contactMethod) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    firebaseApp.database()
+      .ref(`users/${user.uid}/contacts/${contactId}/contactMethods/${contactMethod.id}`)
+      .set(contactMethod)
+      .then(() => updateTimestamp(user.uid, 'contacts'));
+  };
+}
+
+export function deleteContactMethod(contactId, methodId) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    firebaseApp.database()
+      .ref(`users/${user.uid}/contacts/${contactId}/contactMethods/${methodId}`)
+      .remove()
+      .then(() => updateTimestamp(user.uid, 'contacts'));
   };
 }
 
@@ -191,43 +223,30 @@ export function addRotation(rotation) {
     return firebaseApp.database().ref(`users/${user.uid}/rotations/${newRotationKey}`)
       .set(_.extend({}, rotation, {
         id: newRotationKey
-      }));
+      }))
+      .then(() => updateTimestamp(user.uid, 'rotations'));
   };
 }
 
 export function updateRotation(rotation) {
   return (dispatch, getStore) => {
     const { user } = getStore();
-    return firebaseApp.database().ref(`users/${user.uid}/rotations/${rotation.id}`).set(rotation);
-  };
-}
-
-export function deleteContact(id) {
-  return (dispatch, getStore) => {
-    const { user } = getStore();
-    return firebaseApp.database().ref(`users/${user.uid}/contacts/${id}`).remove();
-  };
-}
-
-export function deleteContactMethod(contactId, methodId) {
-  return (dispatch, getStore) => {
-    const { user } = getStore();
-    firebaseApp.database()
-      .ref(`users/${user.uid}/contacts/${contactId}/contactMethods/${methodId}`).remove();
+    return firebaseApp.database()
+      .ref(`users/${user.uid}/rotations/${rotation.id}`)
+      .set(rotation)
+      .then(() => updateTimestamp(user.uid, 'rotations'));
   };
 }
 
 // generate all events from scratch based on rotations?
 export function updateAllEvents() {
   return (dispatch, getStore) => {
-    const { rotations, user } = getStore();
+    const { user, rotations } = getStore();
     const eventSets = _(rotations).map(rotation => {
       const timestamps = getTimestampsUntil(rotation, moment().add(1, 'month'));
       const existingOriginalTimestamps = _.map(rotation.events, event => event.timestampOriginal);
-      // console.warn('eot', existingOriginalTimestamps);
       const filteredTimestamps =
         _.filter(timestamps, timestamp => !_.includes(existingOriginalTimestamps, timestamp));
-      // console.warn('ft', filteredTimestamps);
       return _.map(filteredTimestamps, timestamp => ({
         rotationId: rotation.id,
         status: EVENT_STATUS.NOT_DONE,
@@ -241,8 +260,12 @@ export function updateAllEvents() {
       const updateData = _.keyBy(eventSets, item => `${item[0].rotationId}/events`);
       console.warn('updateData', updateData);
       return firebaseApp.database().ref(`users/${user.uid}/rotations`)
-        .update(updateData);
+        .update(updateData)
+        .then(() => updateTimestamp(user.uid, 'events'));
     }
+    updateTimestamp(user.uid, 'events');
+    console.warn('updateAllEvents done');
+    return Promise.resolve();
   };
 }
 

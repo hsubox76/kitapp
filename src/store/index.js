@@ -13,7 +13,8 @@ const initialState = {
   events: [],
   ui: {
     contactModalVisible: false,
-    hasUnsavedChanges: false
+    hasUnsavedChanges: false,
+    lastUpdated: {}
   },
   user: null
 };

@@ -33,8 +33,7 @@ function mapStateToProps(state) {
     rotations: state.rotations,
     contacts: state.contacts,
     events: populateEventDetails(state.rotations, state.contacts),
-    initialStoreLoaded: state.ui.isDataLoaded
-      && _.every(state.ui.isDataLoaded, storeIsLoaded => storeIsLoaded),
+    lastUpdated: state.ui.lastUpdated,
     user: state.user
   };
 }
@@ -46,9 +45,6 @@ function mapDispatchToActions(dispatch) {
 }
 
 class UpcomingComponent extends Component {
-  componentWillMount() {
-    // this.props.actions.updateEvents();
-  }
   componentDidMount() {
     BackAndroid.addEventListener('hardwareBackPress', () => {
       if (this._navigator && this._navigator.getCurrentRoutes().length > 1) {
@@ -58,13 +54,8 @@ class UpcomingComponent extends Component {
       return false;
     });
   }
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.rotations !== this.props.rotations && !_.isEmpty(nextProps.rotations)) {
-      this.props.actions.updateAllEvents();
-    }
-  }
   render() {
-    if (!this.props.initialStoreLoaded) {
+    if (!this.props.lastUpdated.contacts && !this.props.lastUpdated.rotations) {
       return (
         <View style={styles.spinnerContainer}>
           <ActivityIndicator size="large" />
@@ -109,7 +100,7 @@ UpcomingComponent.propTypes = {
   contacts: PropTypes.object.isRequired,
   actions: PropTypes.objectOf(PropTypes.func).isRequired,
   events: PropTypes.array.isRequired,
-  initialStoreLoaded: PropTypes.bool,
+  lastUpdated: PropTypes.object,
   user: PropTypes.object
 };
 

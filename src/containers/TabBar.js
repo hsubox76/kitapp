@@ -57,7 +57,7 @@ class FacebookTabBar extends Component {
           >
             <Icon
               name={tab}
-              size={30}
+              size={40}
               color={this.props.activeTab === i ? activeColorString : inactiveColorString}
               ref={(icon) => { this.tabIcons[i] = icon; }}
             />
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   tabs: {
-    height: 45,
+    height: 55,
     flexDirection: 'row',
     paddingTop: 10,
     borderWidth: 1,

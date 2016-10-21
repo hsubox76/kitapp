@@ -22,8 +22,7 @@ function filterPrimaryContactsOnly(contacts) {
 function mapStateToProps(state) {
   return {
     contacts: state.contacts,
-    initialStoreLoaded: state.ui.isDataLoaded
-      && _.every(state.ui.isDataLoaded, storeIsLoaded => storeIsLoaded),
+    lastUpdated: state.ui.lastUpdated,
   };
 }
 
@@ -52,7 +51,7 @@ class ContactsComponent extends Component {
     const routes = [
       { title: 'Contacts', index: 0 }
     ];
-    if (!props.initialStoreLoaded) {
+    if (!this.props.lastUpdated.contacts) {
       return (
         <View style={styles.spinnerContainer}>
           <ActivityIndicator size="large" />
@@ -157,7 +156,7 @@ class ContactsComponent extends Component {
 ContactsComponent.propTypes = {
   contacts: PropTypes.object.isRequired,
   actions: PropTypes.objectOf(PropTypes.func),
-  initialStoreLoaded: PropTypes.bool,
+  lastUpdated: PropTypes.object,
   modalVisible: PropTypes.bool,
 };
 
