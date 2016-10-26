@@ -1,9 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-import { View, Text, Dimensions, TouchableOpacity, DatePickerAndroid } from 'react-native';
+import { View, Text, Dimensions, TouchableOpacity, DatePickerAndroid, Linking } from 'react-native';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import moment from 'moment';
-import { COLORS, EVENT_STATUS } from '../../data/constants';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { COLORS, EVENT_STATUS, METHOD_TYPE,
+  METHOD_TYPE_ICONS, METHOD_TYPE_LABELS } from '../../data/constants';
 import NavHeader from '../SharedComponents/NavHeader';
 import { setEventTried, setEventTimestamp, setEventStatus } from '../../actions';
 
@@ -12,13 +14,15 @@ const { width } = Dimensions.get('window');
 function mapStateToProps(state, ownProps) {
   const rotation = state.rotations[ownProps.rotationId];
   const contact = state.contacts[rotation.contactId];
+  const contactMethod = contact.contactMethods[rotation.contactMethodId];
   return {
     event: _.extend({},
       rotation.events[ownProps.eventIndex],
       {
         index: ownProps.eventIndex,
         name: rotation.name,
-        contact
+        contact,
+        contactMethod
       })
   };
 }
@@ -37,7 +41,22 @@ function mapDispatchToProps(dispatch) {
 }
 
 class SingleEventView extends Component {
-  openDatePicker() {
+  onAction(contactMethod) {
+    switch (contactMethod.type) {
+      case METHOD_TYPE.CALL:
+        Linking.openURL(`tel:${contactMethod.data}`);
+        break;
+      case METHOD_TYPE.TEXT:
+        Linking.openURL(`sms:${contactMethod.data}`);
+        break;
+      case METHOD_TYPE.EMAIL:
+        Linking.openURL(`mailto:${contactMethod.data}`);
+        break;
+      default:
+        console.warn('unknown contact method type');
+    }
+  }
+  onReschedule() {
     DatePickerAndroid.open({
       date: new Date(this.props.event.timestamp)
     })
@@ -61,6 +80,7 @@ class SingleEventView extends Component {
   }
   render() {
     const event = this.props.event;
+    const contactMethod = this.props.event.contactMethod;
     return (
       <View style={styles.container}>
         <NavHeader
@@ -73,12 +93,14 @@ class SingleEventView extends Component {
             <Text style={styles.labelText}>Name:</Text>
           </View>
           <View style={styles.content}>
-            <Text style={styles.contentText}>{this.props.event.name} ({this.props.event.contact.name})</Text>
+            <Text style={styles.contentText}>
+              {this.props.event.name} ({this.props.event.contact.name})
+            </Text>
           </View>
         </View>
         <View style={styles.row}>
           <View style={styles.label}>
-            <Text style={styles.labelText}>Scheduled for:</Text>
+            <Text style={styles.labelText}>At:</Text>
           </View>
           <View style={styles.content}>
             <Text style={styles.contentText}>
@@ -113,7 +135,7 @@ class SingleEventView extends Component {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, styles.postponeButton]}
-            onPress={() => this.openDatePicker()}
+            onPress={() => this.onReschedule()}
           >
             <Text style={styles.buttonText}>Reschedule</Text>
           </TouchableOpacity>
@@ -126,9 +148,17 @@ class SingleEventView extends Component {
         </View>
         <View style={styles.buttonRow}>
           <TouchableOpacity
+            onPress={() => this.onAction(event.contactMethod)}
             style={[styles.button, styles.actionButton]}
           >
-            <Text style={styles.buttonText}>Call</Text>
+            <Icon
+              style={[styles.buttonText, styles.actionIcon]}
+              name={METHOD_TYPE_ICONS[contactMethod.type]}
+              size={20}
+            />
+            <Text style={styles.buttonText}>
+              {_.capitalize(_.find(METHOD_TYPE_LABELS, { type: contactMethod.type }).label)}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => this.onDone(event)}
@@ -159,17 +189,16 @@ const styles = {
     backgroundColor: '#fff'
   },
   row: {
-    flexDirection: 'column',
+    flexDirection: 'row',
     width: width - 20,
     marginLeft: 10,
     marginVertical: 10
   },
   label: {
-    paddingHorizontal: 5,
-    marginBottom: 5
+    paddingHorizontal: 5
   },
   labelText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold'
   },
   content: {
@@ -181,7 +210,7 @@ const styles = {
     marginRight: 10
   },
   contentText: {
-    fontSize: 18
+    fontSize: 16
   },
   buttonRow: {
     flexDirection: 'row',
@@ -202,22 +231,28 @@ const styles = {
     color: '#fff'
   },
   actionButton: {
+    flexDirection: 'row',
     marginRight: 10,
-    backgroundColor: COLORS.EVENTS.PRIMARY
+    flexGrow: 0,
+    paddingHorizontal: 20,
+    backgroundColor: COLORS.EVENTS.SECONDARY
+  },
+  actionIcon: {
+    marginRight: 10
   },
   cancelButton: {
     backgroundColor: '#999'
   },
   triedButton: {
     marginRight: 10,
-    backgroundColor: COLORS.EVENTS.SECONDARY
+    backgroundColor: COLORS.ROTATIONS.PRIMARY
   },
   postponeButton: {
     marginRight: 10,
-    backgroundColor: COLORS.ROTATIONS.PRIMARY
+    backgroundColor: COLORS.ROTATIONS.SECONDARY
   },
   doneButton: {
-    backgroundColor: COLORS.ROTATIONS.SECONDARY
+    backgroundColor: COLORS.CONTACTS.SECONDARY
   },
   doneButtonText: {
     fontSize: 18,

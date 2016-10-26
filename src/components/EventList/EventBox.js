@@ -7,21 +7,6 @@ import { METHOD_TYPE, METHOD_TYPE_ICONS, COLORS, EVENT_STATUS } from '../../data
 
 
 class EventBox extends Component {
-  onPress() {
-    switch (this.props.event.contactMethod.type) {
-      case METHOD_TYPE.CALL:
-        Linking.openURL(`tel:${this.props.event.contactMethod.data}`);
-        break;
-      case METHOD_TYPE.TEXT:
-        Linking.openURL(`sms:${this.props.event.contactMethod.data}`);
-        break;
-      case METHOD_TYPE.EMAIL:
-        Linking.openURL(`mailto:${this.props.event.contactMethod.data}`);
-        break;
-      default:
-        console.warn('unknown contact method type');
-    }
-  }
   render() {
     const props = this.props;
     let type;
