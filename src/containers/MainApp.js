@@ -32,7 +32,11 @@ class MainApp extends Component {
   }
   render() {
     return (
-      <TabView initialPage={0} renderTabBar={() => <TabBar />}>
+      <TabView
+        initialPage={0}
+        renderTabBar={() => <TabBar />}
+        onChangeTab={(page) => this.props.actions.setPageIndex(page.i)}
+      >
         <Upcoming tabLabel="clock" />
         <Contacts tabLabel="torsos" />
         <Settings tabLabel="widget" />

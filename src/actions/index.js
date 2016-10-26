@@ -26,6 +26,10 @@ export function setUser(user) {
   return { type: ACTIONS.SET_USER, payload: { user } };
 }
 
+export function setPageIndex(index) {
+  return { type: ACTIONS.SET_PAGE_INDEX, payload: { index } };
+}
+
 export function createAccountWithEmail(email, password) {
   return (dispatch) => {
     firebaseApp.auth()
@@ -253,7 +257,6 @@ function generateEventSetFromRotation(rotation, mode = 'new') {
   let existingEvents = [];
   if (mode === 'update') {
     const lastEventTimestamp = _.last(rotation.events).timestamp;
-    console.warn('lastEventTimestamp', moment(lastEventTimestamp).format('LLL'));
     if (lastEventTimestamp < moment().valueOf()) {
       timestamps = getTimestampsFromUntil(rotation, lastEventTimestamp, moment().add(1, 'month'));
       existingEvents = rotation.events;
@@ -261,7 +264,6 @@ function generateEventSetFromRotation(rotation, mode = 'new') {
   } else if (mode === 'new') {
     timestamps = getTimestampsFromUntil(rotation, moment(), moment().add(1, 'month'));
   }
-  console.warn('timestamps', timestamps);
   return existingEvents.concat(_.map(timestamps, timestamp => ({
     rotationId: rotation.id,
     status: EVENT_STATUS.NOT_DONE,
@@ -284,8 +286,6 @@ export function generateEventsForRotation(rotation, mode = 'new') {
 export function generateAllEvents(mode = 'new') {
   return (dispatch, getStore) => {
     const { user, rotations } = getStore();
-    console.warn('generateAllEvents start, mode: ', mode);
-    console.warn('rotations', rotations);
     const eventSets = _(rotations).map(rotation => generateEventSetFromRotation(rotation, mode))
       .filter(eventSet => eventSet.length > 0)
       .value();
@@ -297,7 +297,6 @@ export function generateAllEvents(mode = 'new') {
         .then(() => updateTimestamp(user.uid, 'events'));
     }
     updateTimestamp(user.uid, 'events');
-    console.warn('generateAllEvents done, mode: ', mode);
     return Promise.resolve();
   };
 }

@@ -23,6 +23,7 @@ function mapStateToProps(state) {
   return {
     contacts: state.contacts,
     lastUpdated: state.ui.lastUpdated,
+    pageIndex: state.ui.pageIndex,
   };
 }
 
@@ -45,6 +46,11 @@ class ContactsComponent extends Component {
       }
       return false;
     });
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.pageIndex !== this.props.pageIndex && nextProps.pageIndex !== 1) {
+      this._navigator.popToTop();
+    }
   }
   render() {
     const props = this.props;
@@ -158,6 +164,7 @@ ContactsComponent.propTypes = {
   actions: PropTypes.objectOf(PropTypes.func),
   lastUpdated: PropTypes.object,
   modalVisible: PropTypes.bool,
+  pageIndex: PropTypes.number,
 };
 
 const styles = {

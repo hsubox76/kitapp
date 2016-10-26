@@ -34,7 +34,8 @@ function mapStateToProps(state) {
     contacts: state.contacts,
     events: populateEventDetails(state.rotations, state.contacts),
     lastUpdated: state.ui.lastUpdated,
-    user: state.user
+    user: state.user,
+    pageIndex: state.ui.pageIndex,
   };
 }
 
@@ -57,6 +58,9 @@ class UpcomingComponent extends Component {
   componentWillReceiveProps(nextProps) {
     if (_.isEmpty(this.props.rotations) && !_.isEmpty(nextProps.rotations)) {
       this.props.actions.generateAllEvents('update');
+    }
+    if (nextProps.pageIndex !== this.props.pageIndex && nextProps.pageIndex !== 0) {
+      this._navigator.popToTop();
     }
   }
   render() {
@@ -104,7 +108,8 @@ UpcomingComponent.propTypes = {
   actions: PropTypes.objectOf(PropTypes.func).isRequired,
   events: PropTypes.array.isRequired,
   lastUpdated: PropTypes.object,
-  user: PropTypes.object
+  user: PropTypes.object,
+  pageIndex: PropTypes.number,
 };
 
 const styles = {
