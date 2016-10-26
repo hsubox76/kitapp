@@ -4,11 +4,12 @@ import { bindActionCreators } from 'redux';
 import { View, ActivityIndicator, Navigator, BackAndroid } from 'react-native';
 import _ from 'lodash';
 import LinearGradient from 'react-native-linear-gradient';
+import { EVENT_STATUS } from '../data/constants';
 import EventList from '../components/EventList/EventList';
 import SingleEventView from '../components/SingleEventView/SingleEventView';
 import * as Actions from '../actions';
 
-function populateEventDetails(rotations, contacts) {
+function formatEventList(rotations, contacts) {
   return _(rotations)
   .map(rotation => {
     const contact = _.find(contacts,
@@ -25,6 +26,7 @@ function populateEventDetails(rotations, contacts) {
     }));
   })
   .flatten()
+  .filter(event => event.status !== EVENT_STATUS.CANCELED && event.status !== EVENT_STATUS.DONE)
   .sortBy('timestamp')
   .value();
 }
@@ -33,7 +35,7 @@ function mapStateToProps(state) {
   return {
     rotations: state.rotations,
     contacts: state.contacts,
-    events: populateEventDetails(state.rotations, state.contacts),
+    events: formatEventList(state.rotations, state.contacts),
     lastUpdated: state.ui.lastUpdated,
     user: state.user,
     pageIndex: state.ui.pageIndex,

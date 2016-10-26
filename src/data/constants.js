@@ -55,7 +55,7 @@ export const COLORS = {
 
 export const EVENT_STATUS = {
   DONE: 'done',
-  MISSED: 'missed',
+  CANCELED: 'canceled',
   NOT_DONE: 'not done'
 };
 

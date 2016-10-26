@@ -256,7 +256,8 @@ function generateEventSetFromRotation(rotation, mode = 'new') {
   let timestamps = [];
   let existingEvents = [];
   if (mode === 'update') {
-    const lastEventTimestamp = _.last(rotation.events).timestamp;
+    const lastEventTimestamp = _.findLast(rotation.events,
+      event => event.status === EVENT_STATUS.NOT_DONE).timestamp || moment();
     if (lastEventTimestamp < moment().valueOf()) {
       timestamps = getTimestampsFromUntil(rotation, lastEventTimestamp, moment().add(1, 'month'));
       existingEvents = rotation.events;
@@ -302,12 +303,23 @@ export function generateAllEvents(mode = 'new') {
   };
 }
 
-export function setEventTried(rotationId, eventIndex, tries = []) {
+export function setEventTried(event) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    const tries = event.tries || [];
+    return firebaseApp.database()
+      .ref(`users/${user.uid}/rotations/${event.rotationId}/events/${event.index}`).update({
+        tries: tries.concat(moment().format(DATE_FORMAT))
+      });
+  };
+}
+
+export function setEventStatus(event, status) {
   return (dispatch, getStore) => {
     const { user } = getStore();
     return firebaseApp.database()
-      .ref(`users/${user.uid}/rotations/${rotationId}/events/${eventIndex}`).update({
-        tries: tries.concat(moment().format(DATE_FORMAT))
+      .ref(`users/${user.uid}/rotations/${event.rotationId}/events/${event.index}`).update({
+        status
       });
   };
 }

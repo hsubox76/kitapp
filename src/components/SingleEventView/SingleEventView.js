@@ -3,26 +3,36 @@ import { View, Text, Dimensions, TouchableOpacity, DatePickerAndroid } from 'rea
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import moment from 'moment';
-import { COLORS } from '../../data/constants';
+import { COLORS, EVENT_STATUS } from '../../data/constants';
 import NavHeader from '../SharedComponents/NavHeader';
-import { setEventTried, setEventTimestamp } from '../../actions';
+import { setEventTried, setEventTimestamp, setEventStatus } from '../../actions';
 
 const { width } = Dimensions.get('window');
 
 function mapStateToProps(state, ownProps) {
+  const rotation = state.rotations[ownProps.rotationId];
+  const contact = state.contacts[rotation.contactId];
   return {
     event: _.extend({},
-      state.rotations[ownProps.rotationId].events[ownProps.eventIndex],
-      { index: ownProps.eventIndex })
+      rotation.events[ownProps.eventIndex],
+      {
+        index: ownProps.eventIndex,
+        name: rotation.name,
+        contact
+      })
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    setEventTried: (rotationId, eventIndex, tries) =>
-      dispatch(setEventTried(rotationId, eventIndex, tries)),
+    setEventTried: (event) =>
+      dispatch(setEventTried(event)),
     setEventTimestamp: (event, timestamp) =>
-      dispatch(setEventTimestamp(event, timestamp))
+      dispatch(setEventTimestamp(event, timestamp)),
+    setEventCanceled: event =>
+      dispatch(setEventStatus(event, EVENT_STATUS.CANCELED)),
+    setEventDone: event =>
+      dispatch(setEventStatus(event, EVENT_STATUS.DONE)),
   };
 }
 
@@ -41,6 +51,14 @@ class SingleEventView extends Component {
       }
     });
   }
+  onCancel(event) {
+    this.props.setEventCanceled(event)
+      .then(() => this.props.onBack());
+  }
+  onDone(event) {
+    this.props.setEventDone(event)
+      .then(() => this.props.onBack());
+  }
   render() {
     const event = this.props.event;
     return (
@@ -55,7 +73,7 @@ class SingleEventView extends Component {
             <Text style={styles.labelText}>Name:</Text>
           </View>
           <View style={styles.content}>
-            <Text style={styles.contentText}>{this.props.event.name}</Text>
+            <Text style={styles.contentText}>{this.props.event.name} ({this.props.event.contact.name})</Text>
           </View>
         </View>
         <View style={styles.row}>
@@ -81,12 +99,14 @@ class SingleEventView extends Component {
             <Text style={styles.labelText}>Attempts:</Text>
           </View>
           <View style={styles.content}>
-            <Text style={styles.contentText}>{this.props.event.tries ? this.props.event.tries.length : 0}</Text>
+            <Text style={styles.contentText}>
+              {this.props.event.tries ? this.props.event.tries.length : 0}
+            </Text>
           </View>
         </View>
         <View style={styles.buttonRow}>
           <TouchableOpacity
-            onPress={() => this.props.setEventTried(event.rotationId, event.index, event.tries || [])}
+            onPress={() => this.props.setEventTried(event)}
             style={[styles.button, styles.triedButton]}
           >
             <Text style={styles.buttonText}>Tried</Text>
@@ -98,6 +118,7 @@ class SingleEventView extends Component {
             <Text style={styles.buttonText}>Reschedule</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => this.onCancel(event)}
             style={[styles.button, styles.cancelButton]}
           >
             <Text style={styles.buttonText}>Cancel</Text>
@@ -110,6 +131,7 @@ class SingleEventView extends Component {
             <Text style={styles.buttonText}>Call</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => this.onDone(event)}
             style={[styles.button, styles.doneButton]}
           >
             <Text style={styles.doneButtonText}>Done!</Text>
@@ -127,6 +149,8 @@ SingleEventView.propTypes = {
   onBack: PropTypes.func.isRequired,
   setEventTried: PropTypes.func.isRequired,
   setEventTimestamp: PropTypes.func.isRequired,
+  setEventCanceled: PropTypes.func.isRequired,
+  setEventDone: PropTypes.func.isRequired,
 };
 
 const styles = {

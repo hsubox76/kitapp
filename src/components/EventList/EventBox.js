@@ -3,7 +3,7 @@ import { TouchableOpacity, View, Text, Linking } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { METHOD_TYPE, METHOD_TYPE_ICONS, COLORS } from '../../data/constants';
+import { METHOD_TYPE, METHOD_TYPE_ICONS, COLORS, EVENT_STATUS } from '../../data/constants';
 
 
 class EventBox extends Component {
@@ -26,7 +26,10 @@ class EventBox extends Component {
     const props = this.props;
     let type;
     let contentColor;
-    if (props.event.timestamp > moment()) {
+    if (props.event.status === EVENT_STATUS.CANCELED) {
+      type = 'canceled';
+      contentColor = 'white';
+    } else if (props.event.timestamp > moment()) {
       if (props.event.timestamp < moment().add(1, 'weeks')) {
         type = 'soon';
         contentColor = 'white';
@@ -96,6 +99,9 @@ const styles = {
     },
     missed: {
       borderWidth: 3
+    },
+    canceled: {
+      backgroundColor: '#ccc'
     }
   },
   date: {
