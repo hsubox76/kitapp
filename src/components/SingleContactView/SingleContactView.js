@@ -6,6 +6,7 @@ import _ from 'lodash';
 import ContactMethods from '../ContactMethods/ContactMethods';
 import ContactRotations from './ContactRotations';
 import NavHeader from '../SharedComponents/NavHeader';
+import FamilyView from '../SharedComponents/FamilyView';
 import * as Actions from '../../actions';
 
 function mapStateToProps(state, ownProps) {
@@ -61,6 +62,7 @@ class SingleContactView extends Component {
             </Text>
           </View>
           <ScrollView style={{ flex: 1 }}>
+            <FamilyView familyIds={contact.family} />
             <ContactRotations
               onRotationPress={this.props.onRotationPress}
               onNewRotationPress={this.props.onNewRotationPress}

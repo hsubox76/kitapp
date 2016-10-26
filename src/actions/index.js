@@ -256,8 +256,9 @@ function generateEventSetFromRotation(rotation, mode = 'new') {
   let timestamps = [];
   let existingEvents = [];
   if (mode === 'update') {
-    const lastEventTimestamp = _.findLast(rotation.events,
-      event => event.status === EVENT_STATUS.NOT_DONE).timestamp || moment();
+    const lastEvent = _.findLast(rotation.events,
+      event => event.status === EVENT_STATUS.NOT_DONE);
+    const lastEventTimestamp = _.get(lastEvent, 'timestamp') || moment();
     if (lastEventTimestamp < moment().valueOf()) {
       timestamps = getTimestampsFromUntil(rotation, lastEventTimestamp, moment().add(1, 'month'));
       existingEvents = rotation.events;

@@ -4,9 +4,10 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { COLORS, EVENT_STATUS, METHOD_TYPE,
+import { COLORS, EVENT_STATUS, METHOD_TYPE, DATE_FORMAT,
   METHOD_TYPE_ICONS, METHOD_TYPE_LABELS } from '../../data/constants';
 import NavHeader from '../SharedComponents/NavHeader';
+import FamilyView from '../SharedComponents/FamilyView';
 import { setEventTried, setEventTimestamp, setEventStatus } from '../../actions';
 
 const { width } = Dimensions.get('window');
@@ -15,6 +16,7 @@ function mapStateToProps(state, ownProps) {
   const rotation = state.rotations[ownProps.rotationId];
   const contact = state.contacts[rotation.contactId];
   const contactMethod = contact.contactMethods[rotation.contactMethodId];
+  const family = _.map(contact.family, person => _.extend({}, person, state.contacts[person.id]));
   return {
     event: _.extend({},
       rotation.events[ownProps.eventIndex],
@@ -22,7 +24,8 @@ function mapStateToProps(state, ownProps) {
         index: ownProps.eventIndex,
         name: rotation.name,
         contact,
-        contactMethod
+        contactMethod,
+        family
       })
   };
 }
@@ -81,6 +84,9 @@ class SingleEventView extends Component {
   render() {
     const event = this.props.event;
     const contactMethod = this.props.event.contactMethod;
+    const attemptsText = event.tries
+      ? `${event.tries.length} (last on ${moment(_.last(event.tries), DATE_FORMAT).format('L')})`
+      : 0;
     return (
       <View style={styles.container}>
         <NavHeader
@@ -110,19 +116,11 @@ class SingleEventView extends Component {
         </View>
         <View style={styles.row}>
           <View style={styles.label}>
-            <Text style={styles.labelText}>Status:</Text>
-          </View>
-          <View style={styles.content}>
-            <Text style={styles.contentText}>{this.props.event.status}</Text>
-          </View>
-        </View>
-        <View style={styles.row}>
-          <View style={styles.label}>
             <Text style={styles.labelText}>Attempts:</Text>
           </View>
           <View style={styles.content}>
             <Text style={styles.contentText}>
-              {this.props.event.tries ? this.props.event.tries.length : 0}
+              {attemptsText}
             </Text>
           </View>
         </View>
@@ -131,22 +129,37 @@ class SingleEventView extends Component {
             onPress={() => this.props.setEventTried(event)}
             style={[styles.button, styles.triedButton]}
           >
-            <Text style={styles.buttonText}>Tried</Text>
+            <Icon
+              style={[styles.buttonText, styles.triedButtonText, styles.buttonIcon]}
+              name={'ellipsis-h'}
+              size={20}
+            />
+            <Text style={[styles.buttonText, styles.triedButtonText]}>Tried</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.button, styles.postponeButton]}
+            style={[styles.button, styles.rescheduleButton]}
             onPress={() => this.onReschedule()}
           >
-            <Text style={styles.buttonText}>Reschedule</Text>
+            <Icon
+              style={[styles.buttonText, styles.rescheduleButtonText, styles.buttonIcon]}
+              name={'calendar-o'}
+              size={20}
+            />
+            <Text style={[styles.buttonText, styles.rescheduleButtonText]}>Reschedule</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => this.onCancel(event)}
             style={[styles.button, styles.cancelButton]}
           >
-            <Text style={styles.buttonText}>Cancel</Text>
+            <Icon
+              style={[styles.buttonText, styles.cancelButtonText, styles.buttonIcon]}
+              name={'times'}
+              size={20}
+            />
+            <Text style={[styles.buttonText, styles.cancelButtonText]}>Cancel</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.buttonRow}>
+        <View style={[styles.buttonRow, styles.lastButtonRow]}>
           <TouchableOpacity
             onPress={() => this.onAction(event.contactMethod)}
             style={[styles.button, styles.actionButton]}
@@ -167,6 +180,7 @@ class SingleEventView extends Component {
             <Text style={styles.doneButtonText}>Done!</Text>
           </TouchableOpacity>
         </View>
+        <FamilyView familyIds={event.family} />
       </View>
     );
   }
@@ -218,17 +232,24 @@ const styles = {
     marginLeft: 15,
     marginTop: 15
   },
+  lastButtonRow: {
+    marginBottom: 20,
+  },
   button: {
+    flexDirection: 'row',
     paddingVertical: 7,
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
     alignItems: 'center',
     justifyContent: 'center',
     flexGrow: 1,
     flexShrink: 0
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: 17,
     color: '#fff'
+  },
+  buttonIcon: {
+    marginRight: 5
   },
   actionButton: {
     flexDirection: 'row',
@@ -241,15 +262,27 @@ const styles = {
     marginRight: 10
   },
   cancelButton: {
-    backgroundColor: '#999'
+    borderColor: '#999',
+    borderWidth: 2
+  },
+  cancelButtonText: {
+    color: '#999'
   },
   triedButton: {
-    marginRight: 10,
-    backgroundColor: COLORS.ROTATIONS.PRIMARY
+    marginRight: 5,
+    borderColor: COLORS.EVENTS.SECONDARY,
+    borderWidth: 2,
   },
-  postponeButton: {
-    marginRight: 10,
-    backgroundColor: COLORS.ROTATIONS.SECONDARY
+  triedButtonText: {
+    color: COLORS.EVENTS.SECONDARY
+  },
+  rescheduleButton: {
+    marginRight: 5,
+    borderColor: COLORS.EVENTS.SECONDARY,
+    borderWidth: 2,
+  },
+  rescheduleButtonText: {
+    color: COLORS.EVENTS.SECONDARY
   },
   doneButton: {
     backgroundColor: COLORS.CONTACTS.SECONDARY

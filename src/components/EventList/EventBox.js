@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { TouchableOpacity, View, Text, Linking } from 'react-native';
+import { TouchableOpacity, View, Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { METHOD_TYPE, METHOD_TYPE_ICONS, COLORS, EVENT_STATUS } from '../../data/constants';
+import { METHOD_TYPE_ICONS, COLORS, EVENT_STATUS } from '../../data/constants';
 
 
 class EventBox extends Component {
