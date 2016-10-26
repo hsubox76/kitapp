@@ -6,12 +6,12 @@ import _ from 'lodash';
 import moment from 'moment';
 import { contacts as testContacts } from '../data/contacts';
 import { rotations as testRotations } from '../data/rotations';
-import { getTimestampsUntil } from '../utils/utils';
+import { getTimestampsFromUntil } from '../utils/utils';
 import { EVENT_STATUS } from '../data/constants';
 
 
 function updateTimestamp(userId, type) {
-  firebaseApp.database()
+  return firebaseApp.database()
     .ref(`users/${userId}/lastUpdated/${type}`)
     .set(moment().valueOf());
 }
@@ -97,9 +97,9 @@ export function fetchStoreFromStorage() {
           }
         });
         // if rotations have been updated more recently than events have been calculated
-        if (results.rotations && (!results.events || results.rotations > results.events)) {
-          dispatch(updateAllEvents()).then(() => updateTimestamp(user.uid, 'events'));
-        }
+        // if (results.rotations && (!results.events || results.rotations > results.events)) {
+        //   dispatch(generateAllEvents()).then(() => updateTimestamp(user.uid, 'events'));
+        // }
       }
     });
   };
@@ -224,38 +224,71 @@ export function addRotation(rotation) {
       .set(_.extend({}, rotation, {
         id: newRotationKey
       }))
-      .then(() => updateTimestamp(user.uid, 'rotations'));
+      .then(() => updateTimestamp(user.uid, 'rotations'))
+      .then(() => dispatch(generateEventsForRotation(rotation, 'new')));
   };
 }
 
 export function updateRotation(rotation) {
   return (dispatch, getStore) => {
     const { user } = getStore();
+    console.warn('updateRotation');
     return firebaseApp.database()
       .ref(`users/${user.uid}/rotations/${rotation.id}`)
       .set(rotation)
-      .then(() => updateTimestamp(user.uid, 'rotations'));
+      .then(() => updateTimestamp(user.uid, 'rotations'))
+      // if you modify a rotation, all dates are out the window
+      // this should probably be fine tuned so name & method changes don't trigger this
+      .then(() => dispatch(generateEventsForRotation(rotation, 'new')));
+  };
+}
+
+function generateEventSetFromRotation(rotation, mode = 'new') {
+  // if update mode
+  //  if timestamp of last event is before now
+  //  add 3 more events starting from now
+  // if new mode
+  //  replace set entirely
+  let timestamps = [];
+  let existingEvents = [];
+  if (mode === 'update') {
+    const lastEventTimestamp = _.last(rotation.events).timestamp;
+    console.warn('lastEventTimestamp', moment(lastEventTimestamp).format('LLL'));
+    if (lastEventTimestamp < moment().valueOf()) {
+      timestamps = getTimestampsFromUntil(rotation, lastEventTimestamp, moment().add(1, 'month'));
+      existingEvents = rotation.events;
+    }
+  } else if (mode === 'new') {
+    timestamps = getTimestampsFromUntil(rotation, moment(), moment().add(1, 'month'));
+  }
+  console.warn('timestamps', timestamps);
+  return existingEvents.concat(_.map(timestamps, timestamp => ({
+    rotationId: rotation.id,
+    status: EVENT_STATUS.NOT_DONE,
+    timestampOriginal: timestamp,
+    timestamp
+  })));
+}
+
+export function generateEventsForRotation(rotation, mode = 'new') {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    const eventSet = generateEventSetFromRotation(rotation, mode);
+    firebaseApp.database().ref(`users/${user.uid}/rotations/${rotation.id}/events`)
+      .set(eventSet)
+      .then(() => updateTimestamp(user.uid, 'events'));
   };
 }
 
 // generate all events from scratch based on rotations?
-export function updateAllEvents() {
+export function generateAllEvents(mode = 'new') {
   return (dispatch, getStore) => {
     const { user, rotations } = getStore();
-    const eventSets = _(rotations).map(rotation => {
-      const timestamps = getTimestampsUntil(rotation, moment().add(1, 'month'));
-      const existingOriginalTimestamps = _.map(rotation.events, event => event.timestampOriginal);
-      const filteredTimestamps =
-        _.filter(timestamps, timestamp => !_.includes(existingOriginalTimestamps, timestamp));
-      return _.map(filteredTimestamps, timestamp => ({
-        rotationId: rotation.id,
-        status: EVENT_STATUS.NOT_DONE,
-        timestampOriginal: timestamp,
-        timestamp
-      }));
-    })
-    .filter(eventSet => eventSet.length > 0)
-    .value();
+    console.warn('generateAllEvents start, mode: ', mode);
+    console.warn('rotations', rotations);
+    const eventSets = _(rotations).map(rotation => generateEventSetFromRotation(rotation, mode))
+      .filter(eventSet => eventSet.length > 0)
+      .value();
     if (eventSets.length > 0) {
       const updateData = _.keyBy(eventSets, item => `${item[0].rotationId}/events`);
       console.warn('updateData', updateData);
@@ -264,7 +297,7 @@ export function updateAllEvents() {
         .then(() => updateTimestamp(user.uid, 'events'));
     }
     updateTimestamp(user.uid, 'events');
-    console.warn('updateAllEvents done');
+    console.warn('generateAllEvents done, mode: ', mode);
     return Promise.resolve();
   };
 }

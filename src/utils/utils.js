@@ -21,11 +21,13 @@ export function getTimestampOfNextEvent(rotation) {
   return nextEventMoment;
 }
 
-// should always return the first one anyway...
-export function getTimestampsUntil(rotation, endTimestamp, maxQuantity = 3) {
+export function getTimestampsFromUntil(rotation, startTimestamp, endTimestamp,
+  minQuantity = 1, maxQuantity = 3) {
   const timestamps = [];
-  let currentTimestamp = moment(rotation.starting, DATE_FORMAT).valueOf();
+  const nextEventTimestamp = getTimestampOfNextEvent(rotation);
+  let currentTimestamp = Math.max(startTimestamp, nextEventTimestamp);
   const now = moment().valueOf();
+  // should always return the first one anyway...
   while (timestamps.length < maxQuantity
     && (currentTimestamp < endTimestamp || timestamps.length === 0)) {
     if (currentTimestamp > now) {
@@ -34,4 +36,9 @@ export function getTimestampsUntil(rotation, endTimestamp, maxQuantity = 3) {
     currentTimestamp += moment.duration(...rotation.every).valueOf();
   }
   return timestamps;
+}
+
+export function getTimestampsUntil(rotation, endTimestamp, maxQuantity = 3) {
+  return getTimestampsFromUntil(rotation, moment(rotation.starting, DATE_FORMAT).valueOf(),
+    endTimestamp, 1, maxQuantity);
 }

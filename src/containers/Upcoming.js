@@ -54,6 +54,11 @@ class UpcomingComponent extends Component {
       return false;
     });
   }
+  componentWillReceiveProps(nextProps) {
+    if (_.isEmpty(this.props.rotations) && !_.isEmpty(nextProps.rotations)) {
+      this.props.actions.generateAllEvents('update');
+    }
+  }
   render() {
     if (!this.props.lastUpdated.contacts && !this.props.lastUpdated.rotations) {
       return (
