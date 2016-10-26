@@ -7,7 +7,7 @@ import moment from 'moment';
 import { contacts as testContacts } from '../data/contacts';
 import { rotations as testRotations } from '../data/rotations';
 import { getTimestampsFromUntil } from '../utils/utils';
-import { EVENT_STATUS } from '../data/constants';
+import { DATE_FORMAT, EVENT_STATUS } from '../data/constants';
 
 
 function updateTimestamp(userId, type) {
@@ -265,6 +265,7 @@ function generateEventSetFromRotation(rotation, mode = 'new') {
     timestamps = getTimestampsFromUntil(rotation, moment(), moment().add(1, 'month'));
   }
   return existingEvents.concat(_.map(timestamps, timestamp => ({
+    tries: [],
     rotationId: rotation.id,
     status: EVENT_STATUS.NOT_DONE,
     timestampOriginal: timestamp,
@@ -298,6 +299,26 @@ export function generateAllEvents(mode = 'new') {
     }
     updateTimestamp(user.uid, 'events');
     return Promise.resolve();
+  };
+}
+
+export function setEventTried(rotationId, eventIndex, tries = []) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    return firebaseApp.database()
+      .ref(`users/${user.uid}/rotations/${rotationId}/events/${eventIndex}`).update({
+        tries: tries.concat(moment().format(DATE_FORMAT))
+      });
+  };
+}
+
+export function setEventTimestamp(event, timestamp) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    return firebaseApp.database()
+      .ref(`users/${user.uid}/rotations/${event.rotationId}/events/${event.index}`).update({
+        timestamp
+      });
   };
 }
 

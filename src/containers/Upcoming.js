@@ -15,7 +15,8 @@ function populateEventDetails(rotations, contacts) {
       (con) => con.id === rotation.contactId);
     const contactMethod = _.find(contact.contactMethods,
         cMethod => cMethod.id === rotation.contactMethodId);
-    return _.map(rotation.events, event => _.extend({}, event, {
+    return _.map(rotation.events, (event, index) => _.extend({}, event, {
+      index,
       contactId: rotation.contactId,
       contactName: contact.name,
       contactMethod,
@@ -87,7 +88,8 @@ class UpcomingComponent extends Component {
             } else if (route.index === 1) {
               return (
                 <SingleEventView
-                  event={route.event}
+                  eventIndex={route.event.index}
+                  rotationId={route.event.rotationId}
                   onBack={() => navigator.pop()}
                 />
               );
