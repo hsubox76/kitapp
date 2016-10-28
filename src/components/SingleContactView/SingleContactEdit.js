@@ -5,7 +5,10 @@ import { View, Text, TextInput, TouchableOpacity,
 import moment from 'moment';
 import _ from 'lodash';
 import ContactMethods from '../ContactMethods/ContactMethods';
+import FamilyMemberBox from '../FamilyMembers/FamilyMemberBox';
 import NavHeader from '../SharedComponents/NavHeader';
+import AddItemButton from '../SharedComponents/AddItemButton';
+import FamilyEditModal from '../FamilyMembers/FamilyEditModal';
 import { CONTACT_TYPE, DATE_FORMAT } from '../../data/constants';
 import * as Actions from '../../actions';
 
@@ -13,8 +16,11 @@ const { width } = Dimensions.get('window');
 
 function mapStateToProps(state, ownProps) {
   const contact = _.find(state.contacts, { id: ownProps.contactId });
+  const family = contact ? _.map(contact.family,
+    person => _.extend({}, person, state.contacts[person.id])) : [];
   return {
-    contact
+    contact,
+    family
   };
 }
 
@@ -31,13 +37,17 @@ class SingleContactEdit extends Component {
       this.state = {
         name: props.contact.name,
         birthdate: props.contact.birthdate ? moment(props.contact.birthdate, DATE_FORMAT) : null,
-        contactMethods: props.contact.contactMethods
+        contactMethods: props.contact.contactMethods,
+        family: props.family,
+        familyEditModalOpen: false
       };
     } else {
       this.state = {
         name: '',
         birthdate: null,
-        contactMethods: []
+        contactMethods: [],
+        family: [],
+        familyEditModalOpen: false
       };
     }
   }
@@ -92,6 +102,19 @@ class SingleContactEdit extends Component {
       });
     }
   }
+  updateFamilyMember(person) {
+    if (_.has(person, 'index')) {
+      this.setState({
+        family: [...this.state.family.slice(0, person.index),
+        person,
+        ...this.state.family.slice(person.index + 1)]
+      });
+    } else {
+      this.setState({
+        family: this.state.family.concat(person)
+      });
+    }
+  }
   formatAndAddContact() {
     if (!this.state.name) {
       // need a warning message
@@ -107,6 +130,9 @@ class SingleContactEdit extends Component {
     if (_.size(this.state.contactMethods) > 0) {
       newContactData.contactMethods = this.state.contactMethods;
     }
+    if (_.size(this.state.family) > 0) {
+      newContactData.family = this.state.family;
+    }
     this.props.onSaveContact(newContactData)
       .then(() => {
         this.props.onBack();
@@ -115,6 +141,14 @@ class SingleContactEdit extends Component {
   }
   render() {
     const contact = this.props.contact || { contactMethods: this.state.contactMethods };
+    const familyEditModal = this.props.contactId ? (
+      <FamilyEditModal
+        contactId={this.props.contactId}
+        visible={this.state.familyEditModalOpen}
+        onRequestClose={() => this.setState({ familyEditModalOpen: false })}
+        editFamilyMember={(person) => this.updateFamilyMember(person)}
+      />
+    ) : null;
     return (
       <View style={styles.container}>
         <NavHeader
@@ -143,6 +177,23 @@ class SingleContactEdit extends Component {
             </TouchableOpacity>
           </View>
           <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderText}>family</Text>
+          </View>
+          <View>
+            {_.map(this.state.family, (person, index) =>
+              <FamilyMemberBox
+                key={person.id}
+                contactId={contact.id}
+                person={_.extend({}, person, { index })}
+                editFamilyMember={(person) => this.updateFamilyMember(person)}
+              />
+            )}
+            <AddItemButton
+              text="add family member"
+              onPress={() => this.setState({ familyEditModalOpen: true })}
+            />
+          </View>
+          <View style={styles.sectionHeader}>
             <Text style={styles.sectionHeaderText}>contact methods</Text>
           </View>
         </View>
@@ -158,6 +209,7 @@ class SingleContactEdit extends Component {
             {this.props.contactId ? 'Save Changes' : 'Save New Contact'}
           </Text>
         </TouchableOpacity>
+        {familyEditModal}
       </View>
     );
   }
@@ -172,6 +224,7 @@ SingleContactEdit.propTypes = {
   contact: PropTypes.object, // optional
   events: PropTypes.array,
   rotations: PropTypes.object,
+  family: PropTypes.array,
 };
 
 const styles = {
