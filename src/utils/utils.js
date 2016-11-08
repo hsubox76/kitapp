@@ -1,4 +1,5 @@
 import moment from 'moment';
+import _ from 'lodash';
 import { DATE_FORMAT } from '../data/constants';
 
 export function getMillisUntilNextEvent(rotation) {
@@ -25,7 +26,7 @@ export function getTimestampsFromUntil(rotation, startTimestamp, endTimestamp,
   minQuantity = 1, maxQuantity = 3) {
   const timestamps = [];
   const nextEventTimestamp = getTimestampOfNextEvent(rotation);
-  let currentTimestamp = Math.max(startTimestamp, nextEventTimestamp);
+  let currentTimestamp = _.round(Math.max(startTimestamp, nextEventTimestamp), -3);
   const now = moment().valueOf();
   // should always return the first one anyway...
   while (timestamps.length < maxQuantity

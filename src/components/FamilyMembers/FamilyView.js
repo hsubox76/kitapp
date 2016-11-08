@@ -9,7 +9,7 @@ import FamilyEditModal from '../FamilyMembers/FamilyEditModal';
 const { width } = Dimensions.get('window');
 
 function mapStateToProps(state, ownProps) {
-  if (!ownProps.family) {
+  if (!ownProps.familyIds) {
     return { family: [] };
   }
   const family = _.map(ownProps.familyIds,

@@ -69,43 +69,62 @@ export function fetchStoreFromStorage() {
   return (dispatch, getStore) => {
     const { user } = getStore();
 
-    firebaseApp.database().ref(`users/${user.uid}/contacts`).on('value', (snapshot) => {
-      const results = snapshot.val();
-      if (results) {
-        dispatch({
-          type: ACTIONS.SET_CONTACTS,
-          payload: {
-            contacts: results
+    const db = firebaseApp.database();
+
+    // initial load of all data
+    db.ref(`users/${user.uid}`)
+      .once('value')
+      .then((snapshot) => {
+        const results = snapshot.val();
+        if (results) {
+          dispatch({
+            type: ACTIONS.SET_STORE,
+            payload: results
+          });
+          dispatch(generateAllEvents('update')).then(() => updateTimestamp(user.uid, 'events'));
+        }
+
+        // listeners for changes in different data
+        db.ref(`users/${user.uid}/contacts`).on('value', (snap) => {
+          const contacts = snap.val();
+          if (contacts) {
+            dispatch({
+              type: ACTIONS.SET_CONTACTS,
+              payload: { contacts }
+            });
           }
         });
-      }
-    });
 
-    firebaseApp.database().ref(`users/${user.uid}/rotations`).on('value', (snapshot) => {
-      const rotations = snapshot.val();
-      if (rotations) {
-        dispatch({
-          type: ACTIONS.SET_ROTATIONS,
-          payload: { rotations }
-        });
-      }
-    });
-
-    firebaseApp.database().ref(`users/${user.uid}/lastUpdated`).on('value', (snapshot) => {
-      const results = snapshot.val();
-      if (results) {
-        dispatch({
-          type: ACTIONS.SET_LAST_UPDATED,
-          payload: {
-            lastUpdated: results
+        db.ref(`users/${user.uid}/rotations`).on('value', (snap) => {
+          const rotations = snap.val();
+          if (rotations) {
+            dispatch({
+              type: ACTIONS.SET_ROTATIONS,
+              payload: { rotations }
+            });
           }
         });
-        // if rotations have been updated more recently than events have been calculated
-        // if (results.rotations && (!results.events || results.rotations > results.events)) {
-        //   dispatch(generateAllEvents()).then(() => updateTimestamp(user.uid, 'events'));
-        // }
-      }
-    });
+
+        db.ref(`users/${user.uid}/events`).on('value', (snap) => {
+          const events = snap.val();
+          if (events) {
+            dispatch({
+              type: ACTIONS.SET_EVENTS,
+              payload: { events }
+            });
+          }
+        });
+
+        db.ref(`users/${user.uid}/lastUpdated`).on('value', (snap) => {
+          const lastUpdated = snap.val();
+          if (lastUpdated) {
+            dispatch({
+              type: ACTIONS.SET_LAST_UPDATED,
+              payload: { lastUpdated }
+            });
+          }
+        });
+      });
   };
 }
 
@@ -284,7 +303,6 @@ export function addRotation(rotation) {
 export function updateRotation(rotation) {
   return (dispatch, getStore) => {
     const { user } = getStore();
-    console.warn('updateRotation');
     return firebaseApp.database()
       .ref(`users/${user.uid}/rotations/${rotation.id}`)
       .set(rotation)
@@ -295,40 +313,47 @@ export function updateRotation(rotation) {
   };
 }
 
-function generateEventSetFromRotation(rotation, mode = 'new') {
+function generateEventSetFromRotation(rotation, events, mode = 'new') {
   // if update mode
   //  if timestamp of last event is before now
   //  add 3 more events starting from now
   // if new mode
   //  replace set entirely
   let timestamps = [];
-  let existingEvents = [];
   if (mode === 'update') {
     const lastEvent = _.findLast(rotation.events,
       event => event.status === EVENT_STATUS.NOT_DONE);
     const lastEventTimestamp = _.get(lastEvent, 'timestamp') || moment();
-    if (lastEventTimestamp < moment().valueOf()) {
+    if (lastEventTimestamp < moment().add(1, 'month').valueOf()) {
       timestamps = getTimestampsFromUntil(rotation, lastEventTimestamp, moment().add(1, 'month'));
-      existingEvents = rotation.events || [];
     }
   } else if (mode === 'new') {
     timestamps = getTimestampsFromUntil(rotation, moment(), moment().add(1, 'month'));
   }
-  return existingEvents.concat(_.map(timestamps, timestamp => ({
+  // remove timestamps that already appear as originalTimestamp of an existing event
+  // with same rotationId
+  timestamps = _.filter(timestamps,
+    timestamp => !_.find(events, { timestampOriginal: timestamp, rotationId: rotation.id }));
+  return _.map(timestamps, timestamp => ({
     tries: [],
     rotationId: rotation.id,
     status: EVENT_STATUS.NOT_DONE,
     timestampOriginal: timestamp,
     timestamp
-  })));
+  }));
 }
 
 export function generateEventsForRotation(rotation, mode = 'new') {
   return (dispatch, getStore) => {
-    const { user } = getStore();
-    const eventSet = generateEventSetFromRotation(rotation, mode);
-    firebaseApp.database().ref(`users/${user.uid}/rotations/${rotation.id}/events`)
-      .set(eventSet)
+    const { user, events } = getStore();
+    const newEventSet = generateEventSetFromRotation(rotation, mode);
+    const newEvents = _(events)
+      .filter(event => event.rotationId !== rotation.id)
+      .concat(newEventSet)
+      .sortBy('timestamp')
+      .value();
+    firebaseApp.database().ref(`users/${user.uid}/events`)
+      .set(newEvents)
       .then(() => updateTimestamp(user.uid, 'events'));
   };
 }
@@ -336,15 +361,16 @@ export function generateEventsForRotation(rotation, mode = 'new') {
 // generate all events from scratch based on rotations?
 export function generateAllEvents(mode = 'new') {
   return (dispatch, getStore) => {
-    const { user, rotations } = getStore();
-    const eventSets = _(rotations).map(rotation => generateEventSetFromRotation(rotation, mode))
+    const { user, rotations, events } = getStore();
+    const eventList = _(rotations)
+      .map(rotation => generateEventSetFromRotation(rotation, events, mode))
       .filter(eventSet => eventSet.length > 0)
+      .flatten()
       .value();
-    if (eventSets.length > 0) {
-      const updateData = _.keyBy(eventSets, item => `${item[0].rotationId}/events`);
-      console.warn('updateData', updateData);
-      return firebaseApp.database().ref(`users/${user.uid}/rotations`)
-        .update(updateData)
+    if (eventList.length > 0) {
+      const mergedEvents = _.sortBy(events.concat(eventList), 'timestamp');
+      return firebaseApp.database().ref(`users/${user.uid}/events`)
+        .set(mergedEvents)
         .then(() => updateTimestamp(user.uid, 'events'));
     }
     updateTimestamp(user.uid, 'events');
@@ -357,7 +383,7 @@ export function setEventTried(event) {
     const { user } = getStore();
     const tries = event.tries || [];
     return firebaseApp.database()
-      .ref(`users/${user.uid}/rotations/${event.rotationId}/events/${event.index}`).update({
+      .ref(`users/${user.uid}/events/${event.index}`).update({
         tries: tries.concat(moment().format(DATE_FORMAT))
       });
   };
@@ -367,7 +393,7 @@ export function setEventStatus(event, status) {
   return (dispatch, getStore) => {
     const { user } = getStore();
     return firebaseApp.database()
-      .ref(`users/${user.uid}/rotations/${event.rotationId}/events/${event.index}`).update({
+      .ref(`users/${user.uid}/events/${event.index}`).update({
         status
       });
   };
@@ -377,7 +403,7 @@ export function setEventTimestamp(event, timestamp) {
   return (dispatch, getStore) => {
     const { user } = getStore();
     return firebaseApp.database()
-      .ref(`users/${user.uid}/rotations/${event.rotationId}/events/${event.index}`).update({
+      .ref(`users/${user.uid}/events/${event.index}`).update({
         timestamp
       });
   };

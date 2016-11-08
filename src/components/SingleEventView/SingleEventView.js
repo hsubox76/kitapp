@@ -19,7 +19,7 @@ function mapStateToProps(state, ownProps) {
   const family = _.map(contact.family, person => _.extend({}, person, state.contacts[person.id]));
   return {
     event: _.extend({},
-      rotation.events[ownProps.eventIndex],
+      state.events[ownProps.eventIndex],
       {
         index: ownProps.eventIndex,
         name: rotation.name,

@@ -5,6 +5,7 @@ export default function ui(state, action) {
   switch (action.type) {
     case ACTIONS.SET_PAGE_INDEX:
       return Object.assign({}, state, { pageIndex: action.payload.index });
+    case ACTIONS.SET_STORE:
     case ACTIONS.SET_LAST_UPDATED:
       return Object.assign({}, state, {
         lastUpdated: _.extend({}, state.lastUpdated, action.payload.lastUpdated)

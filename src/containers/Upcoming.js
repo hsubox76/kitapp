@@ -9,23 +9,26 @@ import EventList from '../components/EventList/EventList';
 import SingleEventView from '../components/SingleEventView/SingleEventView';
 import * as Actions from '../actions';
 
-function formatEventList(rotations, contacts) {
-  return _(rotations)
-  .map(rotation => {
+function formatEventList(rotations, contacts, events) {
+  if (!events || !rotations || !contacts || _.isEmpty(rotations) || _.isEmpty(contacts)) {
+    return [];
+  }
+  return _(events)
+  .map((event, index) => {
+    const rotation = _.find(rotations, rot => rot.id === event.rotationId);
     const contact = _.find(contacts,
       (con) => con.id === rotation.contactId);
     const contactMethod = _.find(contact.contactMethods,
         cMethod => cMethod.id === rotation.contactMethodId);
-    return _.map(rotation.events, (event, index) => _.extend({}, event, {
+    return _.extend({}, event, {
       index,
-      contactId: rotation.contactId,
+      contactId: contact.id,
       contactName: contact.name,
       contactMethod,
       name: rotation.name,
       // flag events more than a year from now to format differently
-    }));
+    });
   })
-  .flatten()
   .filter(event => event.status !== EVENT_STATUS.CANCELED && event.status !== EVENT_STATUS.DONE)
   .sortBy('timestamp')
   .value();
@@ -35,7 +38,7 @@ function mapStateToProps(state) {
   return {
     rotations: state.rotations,
     contacts: state.contacts,
-    events: formatEventList(state.rotations, state.contacts),
+    events: formatEventList(state.rotations, state.contacts, state.events),
     lastUpdated: state.ui.lastUpdated,
     user: state.user,
     pageIndex: state.ui.pageIndex,
