@@ -5,10 +5,7 @@ import { View, Text, TextInput, TouchableOpacity,
 import moment from 'moment';
 import _ from 'lodash';
 import ContactMethods from '../ContactMethods/ContactMethods';
-import FamilyMemberBox from '../FamilyMembers/FamilyMemberBox';
 import NavHeader from '../SharedComponents/NavHeader';
-import AddItemButton from '../SharedComponents/AddItemButton';
-import FamilyEditModal from '../FamilyMembers/FamilyEditModal';
 import { CONTACT_TYPE, DATE_FORMAT } from '../../data/constants';
 import * as Actions from '../../actions';
 
@@ -103,13 +100,20 @@ class SingleContactEdit extends Component {
     }
   }
   updateFamilyMember(person) {
+    let updatedPerson;
     if (_.has(person, 'index')) {
+      // existing contact being modified
+      updatedPerson = _.extend({}, this.state.family[person.index], {
+        id: person.id,
+        title: person.title
+      });
       this.setState({
         family: [...this.state.family.slice(0, person.index),
-        person,
+        updatedPerson,
         ...this.state.family.slice(person.index + 1)]
       });
     } else {
+      // new contact
       this.setState({
         family: this.state.family.concat(person)
       });
@@ -141,14 +145,6 @@ class SingleContactEdit extends Component {
   }
   render() {
     const contact = this.props.contact || { contactMethods: this.state.contactMethods };
-    const familyEditModal = this.props.contactId ? (
-      <FamilyEditModal
-        contactId={this.props.contactId}
-        visible={this.state.familyEditModalOpen}
-        onRequestClose={() => this.setState({ familyEditModalOpen: false })}
-        editFamilyMember={(person) => this.updateFamilyMember(person)}
-      />
-    ) : null;
     return (
       <View style={styles.container}>
         <NavHeader
@@ -177,23 +173,6 @@ class SingleContactEdit extends Component {
             </TouchableOpacity>
           </View>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionHeaderText}>family</Text>
-          </View>
-          <View>
-            {_.map(this.state.family, (person, index) =>
-              <FamilyMemberBox
-                key={person.id}
-                contactId={contact.id}
-                person={_.extend({}, person, { index })}
-                editFamilyMember={(person) => this.updateFamilyMember(person)}
-              />
-            )}
-            <AddItemButton
-              text="add family member"
-              onPress={() => this.setState({ familyEditModalOpen: true })}
-            />
-          </View>
-          <View style={styles.sectionHeader}>
             <Text style={styles.sectionHeaderText}>contact methods</Text>
           </View>
         </View>
@@ -209,7 +188,6 @@ class SingleContactEdit extends Component {
             {this.props.contactId ? 'Save Changes' : 'Save New Contact'}
           </Text>
         </TouchableOpacity>
-        {familyEditModal}
       </View>
     );
   }

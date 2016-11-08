@@ -6,7 +6,7 @@ import _ from 'lodash';
 import ContactMethods from '../ContactMethods/ContactMethods';
 import ContactRotations from './ContactRotations';
 import NavHeader from '../SharedComponents/NavHeader';
-import FamilyView from '../SharedComponents/FamilyView';
+import FamilyView from '../FamilyMembers/FamilyView';
 import * as Actions from '../../actions';
 
 function mapStateToProps(state, ownProps) {
@@ -21,7 +21,12 @@ function mapStateToProps(state, ownProps) {
 function mapDispatchToProps(dispatch) {
   return {
     updateContactMethod:
-      (contactId, contactMethod) => dispatch(Actions.updateContactMethod(contactId, contactMethod))
+      (contactId, contactMethod) => dispatch(Actions.updateContactMethod(contactId, contactMethod)),
+    updateFamilyMember:
+      (contactId, memberIndex, memberData) =>
+        dispatch(Actions.updateFamilyMember(contactId, memberIndex, memberData)),
+    deleteFamilyMember:
+      (contactId, memberIndex) => dispatch(Actions.deleteFamilyMember(contactId, memberIndex))
   };
 }
 
@@ -62,7 +67,6 @@ class SingleContactView extends Component {
             </Text>
           </View>
           <ScrollView style={{ flex: 1 }}>
-            <FamilyView familyIds={contact.family} />
             <ContactRotations
               onRotationPress={this.props.onRotationPress}
               onNewRotationPress={this.props.onNewRotationPress}
@@ -75,6 +79,15 @@ class SingleContactView extends Component {
                 // bind contact ID here, lower views need only worry about contactMethod
                 (contactMethod) => this.props.updateContactMethod(contact.id, contactMethod)
               }
+            />
+            <FamilyView
+              style={{ marginTop: 8 }}
+              editable
+              contactId={contact.id}
+              familyIds={contact.family}
+              onFamilyMemberUpdate={(memberIndex, memberData) =>
+                this.props.updateFamilyMember(contact.id, memberIndex, memberData)}
+              onFamilyMemberDelete={this.props.deleteFamilyMember}
             />
           </ScrollView>
         </View>
@@ -97,6 +110,8 @@ SingleContactView.propTypes = {
   events: PropTypes.array,
   rotations: PropTypes.object,
   updateContactMethod: PropTypes.func.isRequired,
+  updateFamilyMember: PropTypes.func.isRequired,
+  deleteFamilyMember: PropTypes.func.isRequired,
   deleteContact: PropTypes.func,
   onRotationPress: PropTypes.func.isRequired,
   onNewRotationPress: PropTypes.func.isRequired,

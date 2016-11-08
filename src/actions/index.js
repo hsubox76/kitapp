@@ -7,7 +7,7 @@ import moment from 'moment';
 import { contacts as testContacts } from '../data/contacts';
 import { rotations as testRotations } from '../data/rotations';
 import { getTimestampsFromUntil } from '../utils/utils';
-import { DATE_FORMAT, EVENT_STATUS } from '../data/constants';
+import { DATE_FORMAT, EVENT_STATUS, CONTACT_TYPE } from '../data/constants';
 
 
 function updateTimestamp(userId, type) {
@@ -200,6 +200,54 @@ export function deleteContact(id) {
   };
 }
 
+export function updateFamilyMember(contactId, memberIndex, memberData) {
+  return (dispatch, getStore) => {
+    const { user } = getStore();
+    const db = firebaseApp.database();
+    if (memberData.new) {
+      // adding new family member
+      // probably name and birthdate only
+      const familyMemberContactId = db.ref(`users/${user.uid}/contacts`).push().key;
+      db.ref(`users/${user.uid}/contacts/${familyMemberContactId}`)
+        .set({
+          id: familyMemberContactId,
+          name: memberData.name,
+          birthdate: memberData.birthdate,
+          connection: CONTACT_TYPE.SECONDARY })
+        .then(() =>
+          db.ref(`users/${user.uid}/contacts/${contactId}/family/${memberIndex}`)
+            .set({
+              id: familyMemberContactId,
+              title: memberData.title
+            })
+        )
+        .then(() => updateTimestamp(user.uid, 'contacts'));
+    } else {
+      // editing existing family member
+      db.ref(`users/${user.uid}/contacts/${contactId}/family/${memberIndex}`)
+        .set(memberData)
+        .then(() => updateTimestamp(user.uid, 'contacts'));
+    }
+  };
+}
+
+export function deleteFamilyMember(contactId, memberIndex) {
+  return (dispatch, getStore) => {
+    const { user, contacts } = getStore();
+    const personToDelete = contacts[contactId].family[memberIndex];
+    if (personToDelete.connection !== CONTACT_TYPE.PRIMARY) {
+      // for secondary contacts, remove their contact entry too
+      firebaseApp.database()
+        .ref(`users/${user.uid}/contacts/${personToDelete.id}`)
+        .remove();
+    }
+    firebaseApp.database()
+      .ref(`users/${user.uid}/contacts/${contactId}/family/${memberIndex}`)
+      .remove()
+      .then(() => updateTimestamp(user.uid, 'contacts'));
+  };
+}
+
 export function updateContactMethod(contactId, contactMethod) {
   return (dispatch, getStore) => {
     const { user } = getStore();
@@ -261,7 +309,7 @@ function generateEventSetFromRotation(rotation, mode = 'new') {
     const lastEventTimestamp = _.get(lastEvent, 'timestamp') || moment();
     if (lastEventTimestamp < moment().valueOf()) {
       timestamps = getTimestampsFromUntil(rotation, lastEventTimestamp, moment().add(1, 'month'));
-      existingEvents = rotation.events;
+      existingEvents = rotation.events || [];
     }
   } else if (mode === 'new') {
     timestamps = getTimestampsFromUntil(rotation, moment(), moment().add(1, 'month'));

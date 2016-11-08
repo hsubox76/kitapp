@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { COLORS, EVENT_STATUS, METHOD_TYPE, DATE_FORMAT,
   METHOD_TYPE_ICONS, METHOD_TYPE_LABELS } from '../../data/constants';
 import NavHeader from '../SharedComponents/NavHeader';
-import FamilyView from '../SharedComponents/FamilyView';
+import FamilyView from '../FamilyMembers/FamilyView';
 import { setEventTried, setEventTimestamp, setEventStatus } from '../../actions';
 
 const { width } = Dimensions.get('window');
@@ -180,7 +180,7 @@ class SingleEventView extends Component {
             <Text style={styles.doneButtonText}>Done!</Text>
           </TouchableOpacity>
         </View>
-        <FamilyView familyIds={event.family} />
+        <FamilyView contactId={this.props.event.contact.id} familyIds={event.family} />
       </View>
     );
   }
