@@ -14,7 +14,8 @@ const initialState = {
   ui: {
     contactModalVisible: false,
     hasUnsavedChanges: false,
-    lastUpdated: {}
+    lastUpdated: {},
+    currentPageIndex: 0
   },
   user: null
 };

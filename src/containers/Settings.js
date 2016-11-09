@@ -25,6 +25,13 @@ class Settings extends Component {
         <Button onPress={this.props.actions.schedulePushNotification}>
           send push notification
         </Button>
+        <Button onPress={() => this.props.actions.setNavigationDestination(0, [{ index: 0 }, {
+          title: 'event',
+          index: 1,
+          event: { index: 0 }
+        }])}>
+          force navigate
+        </Button>
       </View>
     );
   }

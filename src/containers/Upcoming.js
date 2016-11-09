@@ -41,7 +41,8 @@ function mapStateToProps(state) {
     events: formatEventList(state.rotations, state.contacts, state.events),
     lastUpdated: state.ui.lastUpdated,
     user: state.user,
-    pageIndex: state.ui.pageIndex,
+    currentPageIndex: state.ui.currentPageIndex,
+    desiredNavigationStack: state.ui.desiredNavigationStack
   };
 }
 
@@ -62,11 +63,12 @@ class UpcomingComponent extends Component {
     });
   }
   componentWillReceiveProps(nextProps) {
-    if (_.isEmpty(this.props.rotations) && !_.isEmpty(nextProps.rotations)) {
-      this.props.actions.generateAllEvents('update');
-    }
-    if (nextProps.pageIndex !== this.props.pageIndex && nextProps.pageIndex !== 0) {
+    if (nextProps.currentPageIndex !== this.props.currentPageIndex && nextProps.currentPageIndex !== 0) {
       this._navigator.popToTop();
+    }
+    if (nextProps.desiredNavigationStack) {
+      this._navigator.immediatelyResetRouteStack(nextProps.desiredNavigationStack);
+      // this.props.actions.setNavigationDestination(null, null);
     }
   }
   render() {
@@ -94,7 +96,6 @@ class UpcomingComponent extends Component {
               return (
                 <SingleEventView
                   eventIndex={route.event.index}
-                  rotationId={route.event.rotationId}
                   onBack={() => navigator.pop()}
                 />
               );
@@ -116,7 +117,10 @@ UpcomingComponent.propTypes = {
   events: PropTypes.array.isRequired,
   lastUpdated: PropTypes.object,
   user: PropTypes.object,
-  pageIndex: PropTypes.number,
+  currentPageIndex: PropTypes.number,
+  notification: PropTypes.object,
+  onNotificationNavDone: PropTypes.func,
+  desiredNavigationStack: PropTypes.array,
 };
 
 const styles = {

@@ -8,16 +8,19 @@ import { COLORS, EVENT_STATUS, METHOD_TYPE, DATE_FORMAT,
   METHOD_TYPE_ICONS, METHOD_TYPE_LABELS } from '../../data/constants';
 import NavHeader from '../SharedComponents/NavHeader';
 import FamilyView from '../FamilyMembers/FamilyView';
-import { setEventTried, setEventTimestamp, setEventStatus } from '../../actions';
+import { setNavigationDestination,
+  setEventTried, setEventTimestamp, setEventStatus } from '../../actions';
 
 const { width } = Dimensions.get('window');
 
 function mapStateToProps(state, ownProps) {
-  const rotation = state.rotations[ownProps.rotationId];
+  const event = state.events[ownProps.eventIndex];
+  const rotation = state.rotations[event.rotationId];
   const contact = state.contacts[rotation.contactId];
   const contactMethod = contact.contactMethods[rotation.contactMethodId];
   const family = _.map(contact.family, person => _.extend({}, person, state.contacts[person.id]));
   return {
+    desiredNavigationStack: state.ui.desiredNavigationStack,
     event: _.extend({},
       state.events[ownProps.eventIndex],
       {
@@ -40,10 +43,16 @@ function mapDispatchToProps(dispatch) {
       dispatch(setEventStatus(event, EVENT_STATUS.CANCELED)),
     setEventDone: event =>
       dispatch(setEventStatus(event, EVENT_STATUS.DONE)),
+    clearNavigationDestination: () => dispatch(setNavigationDestination(0, null))
   };
 }
 
 class SingleEventView extends Component {
+  componentDidUpdate() {
+    if (this.props.desiredNavigationStack) {
+      this.props.clearNavigationDestination();
+    }
+  }
   onAction(contactMethod) {
     switch (contactMethod.type) {
       case METHOD_TYPE.CALL:
@@ -188,13 +197,14 @@ class SingleEventView extends Component {
 
 SingleEventView.propTypes = {
   eventIndex: PropTypes.number.isRequired,
-  rotationId: PropTypes.string.isRequired,
   event: PropTypes.object.isRequired,
   onBack: PropTypes.func.isRequired,
   setEventTried: PropTypes.func.isRequired,
   setEventTimestamp: PropTypes.func.isRequired,
   setEventCanceled: PropTypes.func.isRequired,
   setEventDone: PropTypes.func.isRequired,
+  desiredNavigationStack: PropTypes.array,
+  clearNavigationDestination: PropTypes.func,
 };
 
 const styles = {

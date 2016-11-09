@@ -52,7 +52,9 @@ class FacebookTabBar extends Component {
         {this.props.tabs.map((tab, i) => (
           <TouchableOpacity
             key={tab}
-            onPress={() => { this.props.goToPage(i); }}
+            onPress={() => {
+              this.props.goToPage(i);
+            }}
             style={styles.tab}
           >
             <Icon
@@ -74,6 +76,7 @@ FacebookTabBar.propTypes = {
   tabs: PropTypes.array,
   scrollValue: PropTypes.object,
   style: PropTypes.object,
+  setPageIndex: PropTypes.func,
 };
 
 const styles = StyleSheet.create({

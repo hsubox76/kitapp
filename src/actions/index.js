@@ -30,6 +30,14 @@ export function setPageIndex(index) {
   return { type: ACTIONS.SET_PAGE_INDEX, payload: { index } };
 }
 
+export function setNavigationDestination(index, stack) {
+  return { type: ACTIONS.SET_NAVIGATION_DESTINATION, payload: { index, stack } };
+}
+
+export function testAction() {
+  return { type: ACTIONS.TEST };
+}
+
 export function createAccountWithEmail(email, password) {
   return (dispatch) => {
     firebaseApp.auth()
@@ -358,6 +366,26 @@ export function generateEventsForRotation(rotation, mode = 'new') {
   };
 }
 
+function scheduleNotificationsForAllEvents(events) {
+  return (dispatch, getStore) => {
+    const { rotations, contacts } = getStore();
+    pushNotification.cancelAllLocalNotifications();
+    _.forEach(events, (event, index) => {
+      const rotation = rotations[event.rotationId];
+      const contact = contacts[rotation.contactId];
+      const eventName = `${rotation.name} (${contact.name})`;
+      // I should notify on past-due events too, but differently?
+      if (event.timestamp >= moment()) {
+        pushNotification.localNotificationSchedule({
+          id: `00${index}`,
+          message: eventName,
+          date: new Date(event.timestamp)
+        });
+      }
+    });
+  };
+}
+
 // generate all events from scratch based on rotations?
 export function generateAllEvents(mode = 'new') {
   return (dispatch, getStore) => {
@@ -371,10 +399,15 @@ export function generateAllEvents(mode = 'new') {
       const mergedEvents = _.sortBy(events.concat(eventList), 'timestamp');
       return firebaseApp.database().ref(`users/${user.uid}/events`)
         .set(mergedEvents)
-        .then(() => updateTimestamp(user.uid, 'events'));
+        .then(() => updateTimestamp(user.uid, 'events'))
+        .then(() => {
+          dispatch(scheduleNotificationsForAllEvents(mergedEvents));
+        });
+    } else {
+      dispatch(scheduleNotificationsForAllEvents(events));
+      updateTimestamp(user.uid, 'events');
+      return Promise.resolve();
     }
-    updateTimestamp(user.uid, 'events');
-    return Promise.resolve();
   };
 }
 

@@ -1,7 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import _ from 'lodash';
 import TabView from 'react-native-scrollable-tab-view';
+import PushNotification from '../api/notification';
 
 import Upcoming from './Upcoming';
 import Contacts from './Contacts';
@@ -11,7 +13,9 @@ import * as Actions from '../actions';
 
 function mapStateToProps(state) {
   return {
-    hasUnsavedChanges: state.ui.hasUnsavedChanges
+    hasUnsavedChanges: state.ui.hasUnsavedChanges,
+    // currentPageIndex: state.ui.currentPageIndex,
+    desiredPageIndex: state.ui.desiredPageIndex
   };
 }
 
@@ -22,8 +26,27 @@ function mapDispatchToActions(dispatch) {
 }
 
 class MainApp extends Component {
+  constructor() {
+    super();
+    this.state = {
+      page: 0,
+      notification: null
+    };
+  }
   componentWillMount() {
     this.props.actions.fetchStoreFromStorage();
+  }
+  componentDidMount() {
+    const self = this;
+    PushNotification.configure({
+      onNotification: (notification) => {
+        self.props.actions.setNavigationDestination(0, [{ index: 0 }, {
+          title: 'event',
+          index: 1,
+          event: { index: parseInt(notification.id, 10) }
+        }]);
+      }
+    });
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.hasUnsavedChanges) {
@@ -31,11 +54,17 @@ class MainApp extends Component {
     }
   }
   render() {
+    const pageIndex = !_.isUndefined(this.props.desiredPageIndex) ? this.props.desiredPageIndex : null;
+    // console.warn(pageIndex);
+    const self = this;
     return (
       <TabView
-        initialPage={1}
+        initialPage={0}
+        page={pageIndex}
         renderTabBar={() => <TabBar />}
-        onChangeTab={(page) => this.props.actions.setPageIndex(page.i)}
+        onChangeTab={(page) => {
+          self.props.actions.setPageIndex(page.i);
+        }}
       >
         <Upcoming tabLabel="clock" />
         <Contacts tabLabel="torsos" />
@@ -48,6 +77,8 @@ class MainApp extends Component {
 MainApp.propTypes = {
   actions: PropTypes.objectOf(PropTypes.func),
   hasUnsavedChanges: PropTypes.bool,
+  currentPageIndex: PropTypes.number,
+  desiredPageIndex: PropTypes.number,
 };
 
 export default connect(mapStateToProps, mapDispatchToActions)(MainApp);

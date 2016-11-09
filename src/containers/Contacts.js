@@ -23,7 +23,7 @@ function mapStateToProps(state) {
   return {
     contacts: state.contacts,
     lastUpdated: state.ui.lastUpdated,
-    pageIndex: state.ui.pageIndex,
+    currentPageIndex: state.ui.currentPageIndex,
   };
 }
 
@@ -48,7 +48,7 @@ class ContactsComponent extends Component {
     });
   }
   componentWillReceiveProps(nextProps) {
-    if (nextProps.pageIndex !== this.props.pageIndex && nextProps.pageIndex !== 1) {
+    if (nextProps.currentPageIndex !== this.props.currentPageIndex && nextProps.currentPageIndex !== 1) {
       this._navigator.popToTop();
     }
   }
@@ -164,7 +164,7 @@ ContactsComponent.propTypes = {
   actions: PropTypes.objectOf(PropTypes.func),
   lastUpdated: PropTypes.object,
   modalVisible: PropTypes.bool,
-  pageIndex: PropTypes.number,
+  currentPageIndex: PropTypes.number,
 };
 
 const styles = {

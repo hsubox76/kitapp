@@ -1,10 +1,17 @@
 import { ACTIONS } from '../actions/types';
 import _ from 'lodash';
 
-export default function ui(state, action) {
+export default function ui(state = {}, action) {
   switch (action.type) {
+    case ACTIONS.TEST:
+      return state;
     case ACTIONS.SET_PAGE_INDEX:
-      return Object.assign({}, state, { pageIndex: action.payload.index });
+      return Object.assign({}, state, { currentPageIndex: action.payload.index });
+    case ACTIONS.SET_NAVIGATION_DESTINATION:
+      return Object.assign({}, state, {
+        desiredPageIndex: action.payload.index,
+        desiredNavigationStack: action.payload.stack
+      });
     case ACTIONS.SET_STORE:
     case ACTIONS.SET_LAST_UPDATED:
       return Object.assign({}, state, {
