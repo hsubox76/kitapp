@@ -32,6 +32,9 @@ class Settings extends Component {
         }])}>
           force navigate
         </Button>
+        <Button onPress={() => this.props.actions.logout()}>
+          logout firebase
+        </Button>
       </View>
     );
   }

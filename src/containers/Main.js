@@ -20,6 +20,12 @@ function mapDispatchToActions(dispatch) {
 }
 
 class Main extends Component {
+  constructor() {
+    super();
+    this.state = {
+      authChecked: false
+    };
+  }
   componentWillMount() {
     firebaseApp.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -27,10 +33,11 @@ class Main extends Component {
       } else {
         this.props.actions.setUser(null);
       }
+      this.setState({ authChecked: true });
     });
   }
   render() {
-    return this.props.user ? <MainApp /> : <Login />;
+    return this.props.user ? <MainApp /> : <Login authChecked={this.state.authChecked} />;
   }
 }
 

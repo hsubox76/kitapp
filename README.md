@@ -4,10 +4,8 @@ An app for keeping in touch with your friends and family, or a CRM for your pers
 
 ## TODO
 
-- Make family editable in Single Contact View
-- Notifications
+- Make sure notification scheduling is updated in all possible cases
 - Contact notes - should show up in Event View
-- Proper UI for creating new account and logging in
 - Set up local storage / offline capability
 - Confirmation on "cancel" event
 - Event history where you can view Done and Canceled events

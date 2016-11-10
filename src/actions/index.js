@@ -4,6 +4,7 @@ import firebaseApp from '../api/firebase';
 import pushNotification from '../api/notification';
 import _ from 'lodash';
 import moment from 'moment';
+import { Alert } from 'react-native';
 import { contacts as testContacts } from '../data/contacts';
 import { rotations as testRotations } from '../data/rotations';
 import { getTimestampsFromUntil } from '../utils/utils';
@@ -44,9 +45,11 @@ export function createAccountWithEmail(email, password) {
       .createUserWithEmailAndPassword(email, password)
       .then(user => {
         dispatch(setUser(user));
+        updateTimestamp(user.uid, 'contacts');
+        updateTimestamp(user.uid, 'rotations');
       })
       .catch(error => {
-        console.warn(error);
+        Alert.alert('Error Creating Account', error.message);
       });
   };
 }
@@ -59,7 +62,7 @@ export function loginWithEmail(email, password) {
         dispatch(setUser(user));
       })
       .catch(error => {
-        console.warn(error);
+        Alert.alert('Login Error', error.message);
       });
   };
 }
