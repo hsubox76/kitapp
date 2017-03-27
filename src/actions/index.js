@@ -407,8 +407,8 @@ export function generateAllEvents(mode = 'new') {
           dispatch(scheduleNotificationsForAllEvents(mergedEvents));
         });
     } else {
-      dispatch(scheduleNotificationsForAllEvents(events));
-      updateTimestamp(user.uid, 'events');
+      // dispatch(scheduleNotificationsForAllEvents(events));
+      // updateTimestamp(user.uid, 'events');
       return Promise.resolve();
     }
   };

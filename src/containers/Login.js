@@ -114,13 +114,13 @@ class Login extends Component {
             style={loginButtonStyle}
             onPress={() => this.onToggleMode('login')}
           >
-            <Text style={loginTextStyle}>existing account</Text>
+            <Text style={loginTextStyle}>log in</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={createButtonStyle}
             onPress={() => this.onToggleMode('create')}
           >
-            <Text style={createTextStyle}>new account</Text>
+            <Text style={createTextStyle}>sign up</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.loginContainer}>
@@ -168,15 +168,18 @@ const styles = {
   },
   logoText: {
     color: 'white',
+    backgroundColor: 'transparent',
     fontSize: 72
   },
   button: {
+    borderWidth: 2,
     borderColor: 'white',
     marginHorizontal: 10,
     marginTop: 15
   },
   buttonText: {
-    color: 'white'
+    color: 'white',
+    backgroundColor: 'transparent',
   },
   toggleContainer: {
     flexDirection: 'row',
@@ -185,27 +188,30 @@ const styles = {
     width: width - 20,
     alignItems: 'flex-end',
     justifyContent: 'center',
-    marginBottom: 15
+    marginBottom: 15,
+    backgroundColor: 'transparent'
   },
   toggleButton: {
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: 'white',
+    borderBottomWidth: 0,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
     backgroundColor: 'rgba(255, 255, 255, 0.5)'
   },
-  loginToggle: {
-    borderTopLeftRadius: 10,
-  },
-  createToggle: {
-    borderTopRightRadius: 10
-  },
+  // loginToggle: {
+  //   borderTopLeftRadius: 10,
+  // },
+  // createToggle: {
+  //   borderTopRightRadius: 10
+  // },
   selectedToggle: {
     backgroundColor: COLORS.CONTACTS.PRIMARY
   },
   selectedToggleText: {
     color: 'white',
+    backgroundColor: 'transparent',
     fontWeight: 'bold',
     fontSize: 18
   },
@@ -224,6 +230,7 @@ const styles = {
   },
   labelText: {
     color: 'white',
+    backgroundColor: 'transparent',
     fontSize: 20,
     marginBottom: 5
   },
@@ -235,7 +242,9 @@ const styles = {
   },
   textInput: {
     color: '#333',
-    fontSize: 18
+    fontSize: 18,
+    width: 300,
+    height: 30
   }
 };
 

@@ -82,7 +82,8 @@ const styles = {
     flex: 1
   },
   rotationRowText: {
-    color: 'white'
+    color: 'white',
+    backgroundColor: 'transparent'
   },
   rotationRowNameText: {
     fontSize: 14

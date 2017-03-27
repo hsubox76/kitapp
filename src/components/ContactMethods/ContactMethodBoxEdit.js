@@ -128,7 +128,7 @@ ContactMethodBoxEdit.propTypes = {
 
 const styles = {
   contactRow: {
-    // height: 60,
+    height: 60,
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
@@ -144,8 +144,7 @@ const styles = {
   },
   okButton: {
     width: 20,
-    height: 30,
-    marginTop: 10,
+    height: 60,
     marginRight: 20,
     alignItems: 'center',
     justifyContent: 'center'
@@ -159,13 +158,16 @@ const styles = {
   contactRowData: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+    height: 60,
     marginLeft: 10,
     marginRight: 10
   },
   contactRowTextInput: {
     fontSize: 16,
     color: '#589',
-    padding: 7
+    padding: 7,
+    height: 30
   }
 };
 
